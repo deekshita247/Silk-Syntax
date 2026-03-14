@@ -7,44 +7,121 @@
     <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+
+    <!-- ── Announcement bar ── -->
+    <div class="announcement-bar">
+        FREE SHIPPING ON ORDERS OVER $75 &nbsp;·&nbsp; USE CODE <strong>WELCOME10</strong> FOR 10% OFF
+    </div>
+
+    <!-- ════════════════════════════════════════
+         HEADER  (original structure kept)
+    ════════════════════════════════════════ -->
     <header class="site-header">
-        <a href="#" class="logo" aria-label="Fix It Forward Home">
-            Fix-It <span>Forward</span>
-        </a>
+
+        <!-- Top row: logo · search · cart -->
+        <div class="header-top">
+            <a href="#" class="logo" aria-label="Fix It Forward Home">
+                fix-it-<span>forward</span>
+            </a>
+
+            <div class="header-search">
+                <span class="header-search__icon">🔍</span>
+                <input
+                    id="search-input"
+                    type="search"
+                    placeholder="Search for products, brands…"
+                    autocomplete="off"
+                />
+            </div>
+
+            <div class="header-icons">
+                <button class="header-cart" data-open-cart="true" aria-label="Open shopping cart">
+                    🛒 Bag
+                    <span class="header-cart__count" aria-live="polite">0</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Category nav bar -->
         <nav class="nav" aria-label="Primary">
-            <button class="nav__toggle" aria-expanded="false" aria-controls="nav-menu">
-                ☰
-            </button>
+            <button class="nav__toggle" aria-expanded="false" aria-controls="nav-menu">☰</button>
             <ul id="nav-menu" class="nav__list">
                 <li><a href="#hero">Home</a></li>
-                <li><a href="#catalog">Catalogue</a></li>
-                <li><a href="#cart-panel">Cart</a></li>
-                <li><a href="#footer">Help</a></li>
+                <li><a href="#catalog">New In</a></li>
+                <li><a href="#catalog" data-cat="Electronics">Electronics</a></li>
+                <li><a href="#catalog" data-cat="Clothes">Clothing</a></li>
+                <li><a href="#catalog" data-cat="Make Up">Beauty</a></li>
+                <li><a href="#catalog" data-cat="Accessories">Accessories</a></li>
+                <li><a href="#catalog" data-cat="Fitness">Sports</a></li>
+                <li><a href="#catalog" data-cat="Kitchen">Kitchen</a></li>
             </ul>
         </nav>
-        <button class="header-cart" data-open-cart="true">
-            Cart
-            <span class="header-cart__count" aria-live="polite">0</span>
-        </button>
+
     </header>
 
     <main>
+
+        <!-- ════════════════════════════════════════
+             HERO  (original structure kept)
+        ════════════════════════════════════════ -->
         <section id="hero" class="hero" aria-labelledby="hero-title">
+
             <div class="hero__content">
-                <h1 id="hero-title">Broken, But Beautiful Store</h1>
+                <h1 id="hero-title">Style Meets<br/>Substance.</h1>
                 <p>
-                    A deliberately imperfect e-commerce experience. Your mission is to make it
-                    production-ready.
+                    Curated collections across fashion, beauty, electronics
+                    and lifestyle — everything you need, beautifully presented.
                 </p>
-                <button class="btn btn--primary" data-scroll-target="#catalog">
-                    Start Shopping
-                </button>
+                <div style="display:flex;gap:12px;flex-wrap:wrap;">
+                    <button class="btn btn--primary" data-scroll-target="#catalog"
+                        style="background:var(--color-champagne);border-color:var(--color-champagne);color:var(--color-velvet);">
+                        Shop Now
+                    </button>
+                    <button class="btn btn--secondary"
+                        style="border-color:rgba(255,255,255,0.45);color:#fff;"
+                        data-scroll-target="#catalog">
+                        View All
+                    </button>
+                </div>
             </div>
+
             <div class="hero__highlight" aria-hidden="true">
-                <p>Today only: Shipping might or might not work.</p>
+                <p style="font-family:'Cormorant Garamond',serif;font-size:1rem;margin-bottom:16px;color:#7a7069;letter-spacing:0.08em;text-transform:uppercase;">
+                    Shop by Category
+                </p>
+                <div class="hero-categories">
+                    <a class="hero-cat-tile" href="#catalog" data-cat="Clothes">
+                        <span class="hero-cat-tile__icon">👗</span>
+                        Clothing
+                    </a>
+                    <a class="hero-cat-tile" href="#catalog" data-cat="Make Up">
+                        <span class="hero-cat-tile__icon">💄</span>
+                        Beauty
+                    </a>
+                    <a class="hero-cat-tile" href="#catalog" data-cat="Electronics">
+                        <span class="hero-cat-tile__icon">🖥️</span>
+                        Electronics
+                    </a>
+                    <a class="hero-cat-tile" href="#catalog" data-cat="Accessories">
+                        <span class="hero-cat-tile__icon">👜</span>
+                        Accessories
+                    </a>
+                    <a class="hero-cat-tile" href="#catalog" data-cat="Fitness">
+                        <span class="hero-cat-tile__icon">💪</span>
+                        Sports
+                    </a>
+                    <a class="hero-cat-tile" href="#catalog" data-cat="Kitchen">
+                        <span class="hero-cat-tile__icon">🍳</span>
+                        Kitchen
+                    </a>
+                </div>
             </div>
+
         </section>
 
+        <!-- ════════════════════════════════════════
+             CATALOG  (original structure kept)
+        ════════════════════════════════════════ -->
         <section id="catalog" class="catalog" aria-label="Product list">
             <header class="catalog__header">
                 <h2>Featured Items</h2>
@@ -60,23 +137,26 @@
                     <label>
                         <span class="visually-hidden">Search products</span>
                         <input
-                            id="search-input"
+                            id="search-input-mobile"
                             type="search"
-                            placeholder="Search products"
+                            placeholder="Search…"
                             autocomplete="off"
                         />
                     </label>
                 </div>
             </header>
 
+            <!-- Category pills injected by app.js -->
+
             <div class="catalog__grid" id="product-grid">
-                <!-- Products are rendered from JS. Intentionally left blank. -->
+                <!-- Products rendered by app.js -->
             </div>
 
+            <!-- Original product card template — untouched -->
             <template id="product-card-template">
                 <article class="product" data-product-id="">
                     <button class="product__favorite" aria-pressed="false" aria-label="Save product">
-                        ☆
+                        ♡
                     </button>
                     <div class="product__image-wrapper">
                         <img class="product__image" alt="" loading="lazy" />
@@ -101,25 +181,27 @@
                                     value="1"
                                 />
                             </label>
-                            <button class="btn btn--secondary product__add">Add to Cart</button>
+                            <button class="btn btn--primary product__add">Add to Bag</button>
                         </div>
                     </div>
                 </article>
             </template>
         </section>
 
-        <aside id="cart-panel" class="cart" aria-label="Shopping cart" aria-live="polite">
+        <!-- Cart backdrop -->
+        <div class="cart-backdrop" id="cart-backdrop"></div>
+
+        <!-- ════════════════════════════════════════
+             CART PANEL  (original structure kept)
+        ════════════════════════════════════════ -->
+        <aside id="cart-panel" class="cart cart--hidden" aria-label="Shopping cart" aria-live="polite">
             <header class="cart__header">
-                <h2>Cart</h2>
-                <button class="cart__close" data-close-cart="true" aria-label="Close cart">
-                    ×
-                </button>
+                <h2>🛒 My Bag</h2>
+                <button class="cart__close" data-close-cart="true" aria-label="Close cart">×</button>
             </header>
             <div class="cart__body">
-                <ul class="cart__items" id="cart-items">
-                    <!-- Populated by JS -->
-                </ul>
-                <p class="cart__empty" id="cart-empty-msg">Your cart is currently empty.</p>
+                <ul class="cart__items" id="cart-items"></ul>
+                <p class="cart__empty" id="cart-empty-msg">Your bag is empty. Start shopping!</p>
             </div>
             <footer class="cart__footer">
                 <dl class="cart__summary">
@@ -128,25 +210,45 @@
                         <dd id="cart-subtotal">$0.00</dd>
                     </div>
                     <div>
-                        <dt>Estimated Tax</dt>
+                        <dt>Estimated Tax (8%)</dt>
                         <dd id="cart-tax">$0.00</dd>
                     </div>
                     <div>
-                        <dt>Total</dt>
-                        <dd id="cart-total">$0.00</dd>
+                        <dt><strong>Total</strong></dt>
+                        <dd id="cart-total"><strong>$0.00</strong></dd>
                     </div>
                 </dl>
                 <button class="btn btn--primary btn--full" id="checkout-btn" disabled>
-                    Proceed to Checkout
+                    Proceed to Checkout →
                 </button>
                 <p class="cart__status" id="checkout-status" aria-live="polite"></p>
             </footer>
         </aside>
+
     </main>
 
+    <!-- ════════════════════════════════════════
+         FOOTER  (original structure kept)
+    ════════════════════════════════════════ -->
     <footer id="footer" class="site-footer">
-        <p>© <span id="footer-year">2023</span> Fix-It Forward. All rights maybe reserved.</p>
-        <p class="site-footer__note">This is a demo store. Nothing you order will actually ship.</p>
+        <p>© <span id="footer-year">2024</span> Fix-It Forward Shop. All rights reserved.</p>
+        <p class="site-footer__note">This is a demo store. Built for the Fix-It Forward challenge. 🚀</p>
     </footer>
+
+    <script src="products.js"></script>
+    <script src="app.js"></script>
+
+    <script>
+        // Nav category links + hero tile links
+        document.querySelectorAll('[data-cat]').forEach(link => {
+            link.addEventListener('click', e => {
+                e.preventDefault();
+                const cat = link.dataset.cat;
+                if (window.setCategory) window.setCategory(cat);
+                document.getElementById('catalog').scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+
 </body>
 </html>
