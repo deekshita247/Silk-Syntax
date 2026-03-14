@@ -39,7 +39,6 @@
     .filter-group__title{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--color-text-muted);margin-bottom:8px;font-weight:600;display:block;}
     .filter-option{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:.84rem;color:var(--color-text);}
     .filter-option input{accent-color:var(--color-champagne);}
-    .price-display{font-size:.78rem;color:var(--color-text-muted);display:flex;justify-content:space-between;margin-top:6px;}
     .filter-clear{background:none;border:none;font-size:.75rem;color:var(--color-champagne);cursor:pointer;padding:0;text-decoration:underline;margin-top:8px;font-family:var(--font-body);display:block;}
     .empty-state{grid-column:1/-1;text-align:center;padding:60px 0;}
     .catalog-layout{display:grid;grid-template-columns:220px 1fr;gap:24px;align-items:start;}
@@ -54,9 +53,7 @@
   </style>
 </head>
 <body>
-
 <script>
-  // runs immediately — scripts already loaded from <head>
   var params    = new URLSearchParams(window.location.search);
   var catParam  = params.get("cat") || "All";
   var qParam    = params.get("q")   || "";
@@ -75,8 +72,11 @@
     <header class="catalog__header">
       <h2 id="cat-heading">Products</h2>
       <div class="catalog__filters">
-        <button class="btn btn--secondary" id="mobile-filter-btn" style="font-size:.78rem;padding:7px 14px;display:none;"
-          onclick="document.getElementById('filter-sidebar').classList.toggle('show')">Filters</button>
+        <button class="btn btn--secondary" id="mobile-filter-btn"
+          style="font-size:.78rem;padding:7px 14px;display:none;"
+          onclick="document.getElementById('filter-sidebar').classList.toggle('show')">
+          Filters
+        </button>
         <label style="font-size:.82rem;color:var(--color-text-muted);">Sort by
           <select id="sort-select">
             <option value="recommended">Recommended</option>
@@ -88,60 +88,71 @@
         <input id="search-input-cat" type="search" placeholder="Search..."/>
       </div>
     </header>
+
     <p class="results-count" id="results-count"></p>
+
     <div class="catalog-layout">
       <div class="filter-sidebar" id="filter-sidebar"></div>
       <div><div class="cat-grid" id="product-grid"></div></div>
     </div>
   </div>
+
   <div id="rv-section" style="display:none;">
-    <div class="recently-viewed"><h3>Recently Viewed</h3><div class="rv-scroll" id="rv-container"></div></div>
+    <div class="recently-viewed">
+      <h3>Recently Viewed</h3>
+      <div class="rv-scroll" id="rv-container"></div>
+    </div>
   </div>
 </main>
 
 <script>
-  // ── Labels ──────────────────────────────────────────────────
+  // ── Page labels ──────────────────────────────────────────────
   document.getElementById("bc-cat").textContent      = pageTitle;
   document.getElementById("pg-title").textContent    = pageTitle;
   document.getElementById("cat-heading").textContent = pageTitle;
-  document.getElementById("pg-sub").textContent      = isNew
+  document.getElementById("pg-sub").textContent = isNew
     ? "The latest arrivals just dropped."
     : "Explore our " + pageTitle + " collection.";
   if (qParam) document.getElementById("search-input-cat").value = qParam;
 
-  // ── Max price in USD (for slider) ───────────────────────────
-  var MAX_PRICE_USD = Math.max.apply(null, products.map(function(p){ return p.price; }));
-  // slider value = actual USD price (0 to MAX_PRICE_USD)
+  // ── Build filter sidebar ─────────────────────────────────────
   var sidebar = document.getElementById("filter-sidebar");
 
-  // ── Build filter sidebar in JS ───────────────────────────────
-  var h3 = document.createElement("h3");
-  h3.textContent = "Filters";
-  sidebar.appendChild(h3);
+  // Heading
+  var fh = document.createElement("h3");
+  fh.textContent = "Filters";
+  sidebar.appendChild(fh);
 
-  // Price group
-  var pg = document.createElement("div"); pg.className = "filter-group";
-  var pt = document.createElement("span"); pt.className = "filter-group__title"; pt.textContent = "Price Range";
-  pg.appendChild(pt);
+  // ── Price filter: simple checkboxes (no slider) ──────────────
+  var sym = currentRegion.symbol;
+  var r   = currentRegion.rate;
+  var priceRanges = [
+    { label: "Under " + sym + " " + Math.round(50*r),   min: 0,   max: 50   },
+    { label: sym+" "+Math.round(50*r)+" – "+sym+" "+Math.round(100*r), min: 50,  max: 100  },
+    { label: sym+" "+Math.round(100*r)+" – "+sym+" "+Math.round(150*r),min: 100, max: 150  },
+    { label: "Over " + sym + " " + Math.round(150*r),   min: 150, max: 99999 }
+  ];
 
-  var slider = document.createElement("input");
-  slider.type = "range";
-  slider.id   = "price-max";
-  slider.min  = "0";
-  slider.max  = String(Math.ceil(MAX_PRICE_USD)); // max = highest USD price
-  slider.value= String(Math.ceil(MAX_PRICE_USD)); // default = show ALL products
-  slider.step = "1";
-  slider.style.cssText = "width:100%;accent-color:var(--color-champagne);margin-top:6px;";
-  slider.addEventListener("input", function(){ updatePriceLabel(); applyFilters(); });
-  pg.appendChild(slider);
+  var fpg = document.createElement("div"); fpg.className = "filter-group";
+  var fpt = document.createElement("span"); fpt.className = "filter-group__title"; fpt.textContent = "Price Range";
+  fpg.appendChild(fpt);
 
-  var pd = document.createElement("div"); pd.className = "price-display";
-  pd.innerHTML = "<span>" + currentRegion.symbol + " 0</span><span id='price-max-lbl'></span>";
-  pg.appendChild(pd);
-  sidebar.appendChild(pg);
+  priceRanges.forEach(function(range){
+    var lbl = document.createElement("label"); lbl.className = "filter-option";
+    var cb  = document.createElement("input");
+    cb.type = "checkbox";
+    cb.className = "price-filter";
+    cb.setAttribute("data-min", String(range.min));
+    cb.setAttribute("data-max", String(range.max));
+    cb.addEventListener("change", applyFilters);
+    lbl.appendChild(cb);
+    lbl.appendChild(document.createTextNode(" " + range.label));
+    fpg.appendChild(lbl);
+  });
+  sidebar.appendChild(fpg);
 
-  // Size group (only for relevant categories)
-  var sizeCats = ["Clothes","Fitness","All"];
+  // ── Size filter ──────────────────────────────────────────────
+  var sizeCats = ["Clothes", "Fitness", "All"];
   if (sizeCats.indexOf(catName) !== -1) {
     var sg = document.createElement("div"); sg.className = "filter-group";
     var st = document.createElement("span"); st.className = "filter-group__title"; st.textContent = "Size";
@@ -157,16 +168,16 @@
     sidebar.appendChild(sg);
   }
 
-  // Rating group
+  // ── Rating filter ────────────────────────────────────────────
   var rg = document.createElement("div"); rg.className = "filter-group";
   var rt = document.createElement("span"); rt.className = "filter-group__title"; rt.textContent = "Rating";
   rg.appendChild(rt);
-  [4, 3, 2].forEach(function(r){
+  [4, 3, 2].forEach(function(star){
     var lbl = document.createElement("label"); lbl.className = "filter-option";
-    var rb  = document.createElement("input"); rb.type = "radio"; rb.name = "rating-filter"; rb.value = String(r);
+    var rb  = document.createElement("input"); rb.type = "radio"; rb.name = "rating-filter"; rb.value = String(star);
     rb.addEventListener("change", applyFilters);
     lbl.appendChild(rb);
-    lbl.appendChild(document.createTextNode(" " + "★".repeat(r) + " & up"));
+    lbl.appendChild(document.createTextNode(" " + "★".repeat(star) + " & up"));
     rg.appendChild(lbl);
   });
   var la = document.createElement("label"); la.className = "filter-option";
@@ -177,44 +188,78 @@
   rg.appendChild(la);
   sidebar.appendChild(rg);
 
-  // Clear button
-  var clrBtn = document.createElement("button"); clrBtn.className = "filter-clear"; clrBtn.textContent = "Clear all filters";
+  // ── Clear button ─────────────────────────────────────────────
+  var clrBtn = document.createElement("button");
+  clrBtn.className = "filter-clear";
+  clrBtn.textContent = "Clear all filters";
   clrBtn.addEventListener("click", clearFilters);
   sidebar.appendChild(clrBtn);
 
-  // ── Update price label ───────────────────────────────────────
-  function updatePriceLabel(){
-    var usdVal = parseFloat(document.getElementById("price-max").value);
-    var converted = (usdVal * currentRegion.rate).toFixed(0);
-    document.getElementById("price-max-lbl").textContent = currentRegion.symbol + " " + converted;
-  }
-  updatePriceLabel();
-
   // ── Stars helper ─────────────────────────────────────────────
-  function starsHTML(r){
-    return "★".repeat(Math.floor(r)) + (r % 1 >= 0.5 ? "½" : "") + "☆".repeat(5 - Math.ceil(r));
+  function starsHTML(rating){
+    var full  = Math.floor(rating);
+    var half  = rating % 1 >= 0.5 ? 1 : 0;
+    var empty = 5 - full - half;
+    return "★".repeat(full) + (half ? "½" : "") + "☆".repeat(empty);
   }
 
   // ── Apply filters ────────────────────────────────────────────
   function applyFilters(){
-    var query      = (document.getElementById("search-input-cat").value || "").toLowerCase().trim();
-    var sort       = document.getElementById("sort-select").value;
-    var maxUSD     = parseFloat(document.getElementById("price-max").value); // already in USD
-    var minRating  = parseFloat((document.querySelector("input[name='rating-filter']:checked") || {value:"0"}).value);
-    var selSizes   = [];
-    document.querySelectorAll(".size-filter:checked").forEach(function(c){ selSizes.push(c.value); });
+    var query     = (document.getElementById("search-input-cat").value || "").toLowerCase().trim();
+    var sort      = document.getElementById("sort-select").value;
+    var minRating = parseFloat(
+      (document.querySelector("input[name='rating-filter']:checked") || { value: "0" }).value
+    );
+
+    // Collect checked price ranges
+    var checkedPrices = [];
+    document.querySelectorAll(".price-filter:checked").forEach(function(cb){
+      checkedPrices.push({
+        min: parseFloat(cb.getAttribute("data-min")),
+        max: parseFloat(cb.getAttribute("data-max"))
+      });
+    });
+
+    // Collect checked sizes
+    var selSizes = [];
+    document.querySelectorAll(".size-filter:checked").forEach(function(cb){
+      selSizes.push(cb.value);
+    });
 
     var list = products.filter(function(p){
-      var matchCat    = catName === "All" || p.category === catName;
-      var matchSearch = !query ||
-                        p.name.toLowerCase().indexOf(query) !== -1 ||
-                        p.description.toLowerCase().indexOf(query) !== -1;
-      var matchPrice  = p.price <= maxUSD;  // compare USD to USD — no conversion needed
-      var matchRating = p.rating >= minRating;
-      var matchSize   = selSizes.length === 0 ||
-                        !p.sizes || p.sizes.length === 0 ||
-                        p.sizes.some(function(s){ return selSizes.indexOf(s) !== -1; });
-      return matchCat && matchSearch && matchPrice && matchRating && matchSize;
+      // Category
+      if (catName !== "All" && p.category !== catName) return false;
+
+      // Search
+      if (query &&
+          p.name.toLowerCase().indexOf(query) === -1 &&
+          p.description.toLowerCase().indexOf(query) === -1) return false;
+
+      // Price — if none checked, show all; if any checked, product must fit at least one range
+      if (checkedPrices.length > 0) {
+        var priceOk = false;
+        for (var i = 0; i < checkedPrices.length; i++) {
+          if (p.price >= checkedPrices[i].min && p.price < checkedPrices[i].max) {
+            priceOk = true;
+            break;
+          }
+        }
+        if (!priceOk) return false;
+      }
+
+      // Rating
+      if (p.rating < minRating) return false;
+
+      // Size — if none checked OR product has no sizes, skip size check
+      if (selSizes.length > 0 && p.sizes && p.sizes.length > 0) {
+        var sizeOk = false;
+        for (var j = 0; j < selSizes.length; j++) {
+          if (p.sizes.indexOf(selSizes[j]) !== -1) { sizeOk = true; break; }
+        }
+        if (!sizeOk) return false;
+      }
+
+      return true;
     });
 
     if (sort === "price-asc")  list.sort(function(a,b){ return a.price - b.price; });
@@ -224,21 +269,23 @@
     renderGrid(list);
   }
 
-  // ── Render product grid ──────────────────────────────────────
+  // ── Render grid ──────────────────────────────────────────────
   function renderGrid(list){
     var grid = document.getElementById("product-grid");
     var cnt  = document.getElementById("results-count");
     grid.innerHTML = "";
     cnt.textContent = list.length + " product" + (list.length !== 1 ? "s" : "") + " found";
 
-    if (!list.length){
+    if (!list.length) {
       var em = document.createElement("div"); em.className = "empty-state";
       em.innerHTML = "<p style='font-size:2rem;margin-bottom:10px;'>&#128269;</p>" +
-                     "<p style='color:var(--color-text-muted);'>No products match your filters.</p>";
-      var cb3 = document.createElement("button"); cb3.className = "btn btn--secondary";
-      cb3.style.marginTop = "12px"; cb3.textContent = "Clear Filters";
-      cb3.addEventListener("click", clearFilters);
-      em.appendChild(cb3); grid.appendChild(em); return;
+                     "<p style='color:var(--color-text-muted);font-size:.9rem;'>No products match your filters.</p>";
+      var cb2 = document.createElement("button"); cb2.className = "btn btn--secondary";
+      cb2.style.marginTop = "14px"; cb2.textContent = "Clear Filters";
+      cb2.addEventListener("click", clearFilters);
+      em.appendChild(cb2);
+      grid.appendChild(em);
+      return;
     }
 
     list.forEach(function(p){
@@ -247,16 +294,14 @@
       var isFav   = favs.indexOf(p.id) !== -1;
 
       var card = document.createElement("a");
-      card.href      = "product.html?id=" + p.id;
+      card.href = "product.html?id=" + p.id;
       card.className = "prod-card";
 
-      // Discount badge
-      if (discPct){
+      if (discPct) {
         var bdg = document.createElement("span"); bdg.className = "prod-card__badge";
         bdg.textContent = "-" + discPct + "%"; card.appendChild(bdg);
       }
 
-      // Wishlist button
       var favBtn = document.createElement("button");
       favBtn.className   = "prod-card__fav" + (isFav ? " active" : "");
       favBtn.textContent = isFav ? "♥" : "♡";
@@ -264,42 +309,37 @@
         e.preventDefault(); e.stopPropagation();
         var f = JSON.parse(localStorage.getItem("fif_favs") || "[]");
         var idx = f.indexOf(p.id);
-        if (idx !== -1){ f.splice(idx,1); favBtn.textContent="♡"; favBtn.classList.remove("active"); }
-        else            { f.push(p.id);   favBtn.textContent="♥"; favBtn.classList.add("active"); }
+        if (idx !== -1){ f.splice(idx, 1); favBtn.textContent = "♡"; favBtn.classList.remove("active"); }
+        else            { f.push(p.id);    favBtn.textContent = "♥"; favBtn.classList.add("active"); }
         localStorage.setItem("fif_favs", JSON.stringify(f));
       });
       card.appendChild(favBtn);
 
-      // Image
       var iw = document.createElement("div"); iw.className = "prod-card__img";
       var im = document.createElement("img"); im.src = p.image; im.alt = p.name; im.loading = "lazy";
       iw.appendChild(im); card.appendChild(iw);
 
-      // Body
       var body = document.createElement("div"); body.className = "prod-card__body";
 
-      var title = document.createElement("p"); title.className = "prod-card__title"; title.textContent = p.name; body.appendChild(title);
-      var desc  = document.createElement("p"); desc.className  = "prod-card__desc";  desc.textContent  = p.description; body.appendChild(desc);
+      var t = document.createElement("p"); t.className = "prod-card__title"; t.textContent = p.name; body.appendChild(t);
+      var d = document.createElement("p"); d.className = "prod-card__desc";  d.textContent = p.description; body.appendChild(d);
 
-      // Price row
       var pr = document.createElement("div"); pr.style.cssText = "display:flex;align-items:baseline;gap:6px;margin-top:4px;";
-      var pe = document.createElement("span"); pe.className = "prod-card__price"; pe.textContent = formatPrice(p.price); pr.appendChild(pe);
-      if (p.comparePrice){
+      var pe = document.createElement("span"); pe.style.cssText = "font-weight:600;font-size:.9rem;"; pe.textContent = formatPrice(p.price); pr.appendChild(pe);
+      if (p.comparePrice) {
         var cp = document.createElement("span"); cp.style.cssText = "font-size:.72rem;color:var(--color-text-muted);text-decoration:line-through;";
         cp.textContent = formatPrice(p.comparePrice); pr.appendChild(cp);
       }
       body.appendChild(pr);
 
-      // Stars
-      var rr = document.createElement("div"); rr.style.cssText = "display:flex;align-items:center;gap:4px;margin-top:2px;font-size:.7rem;color:var(--color-text-muted);";
-      var ss = document.createElement("span"); ss.style.color = "var(--color-champagne)"; ss.style.fontSize = ".78rem"; ss.textContent = starsHTML(p.rating); rr.appendChild(ss);
-      var rc = document.createElement("span"); rc.textContent = "(" + p.reviews + ")"; rr.appendChild(rc);
+      var rr = document.createElement("div"); rr.style.cssText = "display:flex;align-items:center;gap:4px;margin-top:2px;";
+      var ss = document.createElement("span"); ss.style.cssText = "color:var(--color-champagne);font-size:.78rem;"; ss.textContent = starsHTML(p.rating); rr.appendChild(ss);
+      var rc = document.createElement("span"); rc.style.cssText = "font-size:.7rem;color:var(--color-text-muted);"; rc.textContent = "(" + p.reviews + ")"; rr.appendChild(rc);
       body.appendChild(rr);
 
-      // Stock warning
-      if (p.stock === 0){
+      if (p.stock === 0) {
         var oos = document.createElement("span"); oos.style.cssText = "font-size:.72rem;color:#e05252;margin-top:2px;"; oos.textContent = "Out of stock"; body.appendChild(oos);
-      } else if (p.stock <= 5){
+      } else if (p.stock <= 5) {
         var low = document.createElement("span"); low.style.cssText = "font-size:.72rem;color:#d97706;margin-top:2px;"; low.textContent = "Only " + p.stock + " left!"; body.appendChild(low);
       }
 
@@ -308,15 +348,14 @@
     });
   }
 
-  // ── Clear all filters ────────────────────────────────────────
+  // ── Clear filters ────────────────────────────────────────────
   function clearFilters(){
-    document.getElementById("price-max").value = String(Math.ceil(MAX_PRICE_USD));
-    document.querySelectorAll(".size-filter").forEach(function(c){ c.checked = false; });
+    document.querySelectorAll(".price-filter").forEach(function(cb){ cb.checked = false; });
+    document.querySelectorAll(".size-filter").forEach(function(cb){ cb.checked = false; });
     var allR = document.querySelector("input[name='rating-filter'][value='0']");
     if (allR) allR.checked = true;
     document.getElementById("search-input-cat").value = "";
     document.getElementById("sort-select").value = "recommended";
-    updatePriceLabel();
     applyFilters();
   }
 
@@ -324,10 +363,10 @@
   document.getElementById("search-input-cat").addEventListener("input", applyFilters);
   document.getElementById("sort-select").addEventListener("change", applyFilters);
 
-  // ── First render ─────────────────────────────────────────────
+  // ── Initial render ────────────────────────────────────────────
   applyFilters();
 
-  // ── Recently viewed ──────────────────────────────────────────
+  // ── Recently viewed ───────────────────────────────────────────
   renderRecentlyViewed("rv-container");
   if (document.getElementById("rv-container").children.length > 0){
     document.getElementById("rv-section").style.display = "block";
