@@ -5,116 +5,120 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Fix-It Forward Shop</title>
   <link rel="stylesheet" href="styles.css"/>
+  <script src="products.js"></script>
+  <script src="header.js"></script>
 </head>
 <body>
+<script>injectHeader("");</script>
 
-<script src="products.js"></script>
-<script src="header.js"></script>
-<script> injectHeader(""); </script>
+<!-- Trust strip -->
+<div class="trust-strip">
+  <div class="trust-item"><span>🚚</span><span>Free Shipping Over AED 275</span></div>
+  <div class="trust-item"><span>🔄</span><span>Free 30-Day Returns</span></div>
+  <div class="trust-item"><span>🔒</span><span>Secure Checkout</span></div>
+  <div class="trust-item"><span>✅</span><span>100% Authentic Products</span></div>
+  <div class="trust-item"><span>📦</span><span>Same-Day Dispatch</span></div>
+</div>
 
 <main>
-
-  <!-- ── HERO ── -->
+  <!-- Hero -->
   <section id="hero" class="hero" aria-labelledby="hero-title">
     <div class="hero__content">
       <h1 id="hero-title">Style Meets<br/>Substance.</h1>
-      <p>
-        Curated collections across fashion, beauty, electronics
-        and lifestyle — everything you need, beautifully presented.
-      </p>
+      <p>Curated collections across fashion, beauty, electronics and lifestyle — everything you need, beautifully presented.</p>
       <div style="display:flex;gap:12px;flex-wrap:wrap;">
-        <button class="btn btn--primary" data-scroll-target="#catalog"
-          style="background:var(--color-champagne);border-color:var(--color-champagne);color:var(--color-velvet);">
-          Shop Now
-        </button>
-        <a href="all-categories.html" class="btn btn--secondary"
-          style="border-color:rgba(255,255,255,.45);color:#fff;text-decoration:none;">
-          View All
-        </a>
+        <a href="all-categories.html" class="btn btn--primary" style="background:var(--color-champagne);border-color:var(--color-champagne);color:#1E2845;text-decoration:none;">Shop Now</a>
+        <a href="deals.html" class="btn btn--secondary" style="border-color:rgba(255,255,255,.45);color:#fff;text-decoration:none;">🔥 Today's Deals</a>
       </div>
     </div>
-
-    <div class="hero__highlight" aria-hidden="true">
-      <p style="font-family:var(--font-display);font-size:.9rem;letter-spacing:.1em;
-        text-transform:uppercase;color:var(--color-text-muted);margin-bottom:16px;">
-        Shop by Category
-      </p>
+    <div class="hero__highlight">
+      <p style="font-family:var(--font-display);font-size:.9rem;letter-spacing:.1em;text-transform:uppercase;color:var(--color-text-muted);margin-bottom:16px;">Shop by Category</p>
       <div class="hero-categories">
-        <a class="hero-cat-tile" href="category.html?cat=Clothes">
-          <span class="hero-cat-tile__icon">👗</span>Clothing
-        </a>
-        <a class="hero-cat-tile" href="category.html?cat=Make Up">
-          <span class="hero-cat-tile__icon">💄</span>Beauty
-        </a>
-        <a class="hero-cat-tile" href="category.html?cat=Electronics">
-          <span class="hero-cat-tile__icon">🖥️</span>Electronics
-        </a>
-        <a class="hero-cat-tile" href="category.html?cat=Accessories">
-          <span class="hero-cat-tile__icon">👜</span>Accessories
-        </a>
-        <a class="hero-cat-tile" href="category.html?cat=Fitness">
-          <span class="hero-cat-tile__icon">💪</span>Sports
-        </a>
-        <a class="hero-cat-tile" href="category.html?cat=Kitchen">
-          <span class="hero-cat-tile__icon">🍳</span>Kitchen
-        </a>
+        <a class="hero-cat-tile" href="category.html?cat=Clothes"><span class="hero-cat-tile__icon">👗</span>Clothing</a>
+        <a class="hero-cat-tile" href="category.html?cat=Make Up"><span class="hero-cat-tile__icon">💄</span>Beauty</a>
+        <a class="hero-cat-tile" href="category.html?cat=Electronics"><span class="hero-cat-tile__icon">🖥️</span>Electronics</a>
+        <a class="hero-cat-tile" href="category.html?cat=Accessories"><span class="hero-cat-tile__icon">👜</span>Accessories</a>
+        <a class="hero-cat-tile" href="category.html?cat=Fitness"><span class="hero-cat-tile__icon">💪</span>Sports</a>
+        <a class="hero-cat-tile" href="category.html?cat=Kitchen"><span class="hero-cat-tile__icon">🍳</span>Kitchen</a>
       </div>
     </div>
   </section>
 
-  <!-- ── CATALOG ── -->
-  <section id="catalog" class="catalog" aria-label="Product list">
-    <header class="catalog__header">
-      <h2>Featured Items</h2>
-      <div class="catalog__filters">
-        <label>
-          Sort by
-          <select id="sort-select">
-            <option value="recommended">Recommended</option>
-            <option value="price-asc">Price: Low to High</option>
-            <option value="price-desc">Price: High to Low</option>
-          </select>
-        </label>
-        <label>
-          <span class="visually-hidden">Search products</span>
-          <input id="search-input-mobile" type="search" placeholder="Search…" autocomplete="off"/>
-        </label>
+  <!-- Promo Banners -->
+  <div class="promo-banners">
+    <a href="category.html?cat=Clothes" class="promo-banner promo-banner--placeholder" style="background:linear-gradient(135deg,#1E2845,#2d3d6b);">
+      <!-- Replace with your image: <img src="YOUR_IMAGE_URL" alt=""/> -->
+      <div class="promo-banner__content">
+        <p class="promo-banner__label">New Season</p>
+        <p class="promo-banner__title">Fresh Styles<br/>Are Here</p>
+        <span class="btn btn--primary" style="background:var(--color-champagne);border-color:var(--color-champagne);color:#1E2845;font-size:.75rem;">Shop Clothing</span>
       </div>
-    </header>
+    </a>
+    <a href="deals.html" class="promo-banner promo-banner--placeholder" style="background:linear-gradient(135deg,#7b1e1e,#c0392b);">
+      <div class="promo-banner__content">
+        <p class="promo-banner__label">Limited Time</p>
+        <p class="promo-banner__title">50% Off<br/>Today Only 🔥</p>
+        <span class="btn btn--primary" style="background:#fff;border-color:#fff;color:#c0392b;font-size:.75rem;">View Deals</span>
+      </div>
+    </a>
+    <a href="category.html?cat=Electronics" class="promo-banner promo-banner--placeholder" style="background:linear-gradient(135deg,#0a1628,#1a3a5c);">
+      <div class="promo-banner__content">
+        <p class="promo-banner__label">Just Dropped</p>
+        <p class="promo-banner__title">New Electronics<br/>Collection</p>
+        <span class="btn btn--primary" style="background:var(--color-champagne);border-color:var(--color-champagne);color:#1E2845;font-size:.75rem;">Explore</span>
+      </div>
+    </a>
+    <a href="category.html?cat=Make Up" class="promo-banner promo-banner--placeholder" style="background:linear-gradient(135deg,#3d1a2e,#7b3654);">
+      <div class="promo-banner__content">
+        <p class="promo-banner__label">Beauty Edit</p>
+        <p class="promo-banner__title">Glow Up<br/>Your Routine</p>
+        <span class="btn btn--primary" style="background:var(--color-champagne);border-color:var(--color-champagne);color:#1E2845;font-size:.75rem;">Shop Beauty</span>
+      </div>
+    </a>
+  </div>
 
-    <div class="catalog__grid" id="product-grid"></div>
+  <!-- Deal of the Day teaser -->
+  <div style="padding:0 6vw 48px;">
+    <div style="background:var(--color-surface);border:1px solid var(--color-border-subtle);border-radius:var(--radius-lg);padding:32px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;">
+      <div>
+        <p style="font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--color-text-muted);margin-bottom:6px;">Today Only</p>
+        <h2 style="font-family:var(--font-display);font-size:1.8rem;color:var(--color-text);margin-bottom:8px;">Deal of the Day</h2>
+        <p style="color:var(--color-text-muted);font-size:.9rem;">Up to 50% off selected products. Ends at midnight.</p>
+      </div>
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+        <div id="home-countdown" style="display:flex;gap:10px;"></div>
+        <a href="deals.html" class="btn btn--primary">Shop Deals 🔥</a>
+      </div>
+    </div>
+  </div>
 
-    <!-- Original template — untouched -->
-    <template id="product-card-template">
-      <article class="product" data-product-id="">
-        <button class="product__favorite" aria-pressed="false" aria-label="Save product">♡</button>
-        <div class="product__image-wrapper">
-          <img class="product__image" alt="" loading="lazy"/>
-        </div>
-        <div class="product__body">
-          <h3 class="product__title"></h3>
-          <p class="product__description"></p>
-          <div class="product__pricing">
-            <span class="product__price"></span>
-            <span class="product__price--compare"></span>
-          </div>
-          <div class="product__stock" aria-live="polite"></div>
-          <div class="product__actions">
-            <label class="product__qty-label">
-              Qty
-              <input class="product__qty-input" type="number" min="1" max="9" step="1" value="1"/>
-            </label>
-            <button class="btn btn--primary product__add">Add to Bag</button>
-          </div>
-        </div>
-      </article>
-    </template>
-  </section>
-
+  <!-- Promo code hint -->
+  <div style="padding:0 6vw 60px;text-align:center;">
+    <p style="font-size:.85rem;color:var(--color-text-muted);">Use code <strong style="color:var(--color-text);">SILK-SYNTAX</strong> at checkout for 10% off 🎉</p>
+  </div>
 </main>
 
-<script src="app.js"></script>
-<script> injectFooter(); </script>
-
+<script>
+  function homeCountdown(){
+    var el = document.getElementById("home-countdown");
+    if(!el) return;
+    var now = new Date();
+    var midnight = new Date(now); midnight.setHours(24,0,0,0);
+    var diff = Math.max(0, midnight - now);
+    var h = Math.floor(diff/3600000);
+    var m = Math.floor((diff%3600000)/60000);
+    var s = Math.floor((diff%60000)/1000);
+    var units = [["Hours",h],["Mins",m],["Secs",s]];
+    el.innerHTML = units.map(function(u){
+      return '<div style="background:var(--color-velvet);border-radius:8px;padding:10px 16px;text-align:center;min-width:58px;">' +
+        '<span style="font-size:1.4rem;font-weight:600;color:var(--color-champagne);display:block;font-family:var(--font-display);">' + String(u[1]).padStart(2,"0") + '</span>' +
+        '<span style="font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.5);">' + u[0] + '</span>' +
+        '</div>';
+    }).join("");
+  }
+  homeCountdown();
+  setInterval(homeCountdown, 1000);
+  injectFooter();
+</script>
 </body>
 </html>

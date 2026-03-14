@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Order Confirmed — Fix-It Forward</title>
+  <link rel="stylesheet" href="styles.css"/>
+  <script src="products.js"></script>
+  <script src="header.js"></script>
+  <style>
+    .confirm-wrap{max-width:640px;margin:0 auto;padding:48px 6vw 80px;text-align:center;}
+    .confirm-icon{font-size:4rem;margin-bottom:16px;animation:popIn .5s ease;}
+    @keyframes popIn{0%{transform:scale(0)}80%{transform:scale(1.2)}100%{transform:scale(1)}}
+    .confirm-wrap h1{font-family:var(--font-display);font-size:2.4rem;margin-bottom:8px;}
+    .order-card{background:var(--color-surface);border:1px solid var(--color-border-subtle);border-radius:var(--radius-lg);padding:24px;text-align:left;margin-bottom:24px;}
+    .order-card h3{font-family:var(--font-display);font-size:1.1rem;margin:0 0 16px;}
+    .order-row{display:flex;justify-content:space-between;font-size:.85rem;margin-bottom:8px;color:var(--color-text-muted);}
+    .order-row span:last-child{font-weight:600;color:var(--color-text);}
+    .order-item-row{display:flex;justify-content:space-between;font-size:.82rem;padding:6px 0;border-bottom:1px dashed var(--color-border-subtle);}
+    .order-item-row:last-child{border-bottom:none;}
+  </style>
+</head>
+<body>
+<script>injectHeader("");</script>
+<div style="background:var(--color-velvet);padding:20px 6vw;"><h1 style="font-family:var(--font-display);font-size:1.8rem;color:#fff;margin:0;">Order Confirmed</h1></div>
+<main>
+  <div class="confirm-wrap">
+    <div class="confirm-icon">🎉</div>
+    <h1>Order Placed!</h1>
+    <p style="color:var(--color-text-muted);margin-bottom:32px;font-size:.95rem;" id="confirm-sub">Thank you for your order!</p>
+    <div class="order-card">
+      <h3>Order Details</h3>
+      <div class="order-row"><span>Order ID</span><span id="oid">—</span></div>
+      <div class="order-row"><span>Name</span><span id="oname">—</span></div>
+      <div class="order-row"><span>Estimated Delivery</span><span id="odelivery">—</span></div>
+      <div class="order-row"><span>Total</span><span id="ototal">—</span></div>
+      <div id="order-items" style="margin-top:14px;padding-top:14px;border-top:1px solid var(--color-border-subtle);"></div>
+    </div>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+      <a href="index.html" class="btn btn--primary">Continue Shopping</a>
+      <a href="all-categories.html" class="btn btn--secondary">Browse More</a>
+    </div>
+  </div>
+</main>
+<script>
+  var order = JSON.parse(localStorage.getItem("fif_last_order")||"null");
+  if(order){
+    document.getElementById("confirm-sub").textContent = "Thank you, "+order.name+"! Your order is confirmed.";
+    document.getElementById("oid").textContent    = order.orderId;
+    document.getElementById("oname").textContent  = order.name;
+    document.getElementById("ototal").textContent = order.total;
+    var d = new Date(); d.setDate(d.getDate()+5);
+    document.getElementById("odelivery").textContent = d.toLocaleDateString("en-GB",{weekday:"long",day:"numeric",month:"long"});
+    var list = document.getElementById("order-items");
+    (order.cart||[]).forEach(function(item){
+      var row=document.createElement("div"); row.className="order-item-row";
+      row.innerHTML='<span>'+item.name+(item.size?' ('+item.size+')':'')+' x'+item.qty+'</span><span>'+formatPrice(item.price*item.qty)+'</span>';
+      list.appendChild(row);
+    });
+  }
+  injectFooter();
+</script>
+</body>
+</html>

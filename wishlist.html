@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Wishlist — Fix-It Forward</title>
+  <link rel="stylesheet" href="styles.css"/>
+  <script src="products.js"></script>
+  <script src="header.js"></script>
+</head>
+<body>
+<script>injectHeader("");</script>
+<div style="background:var(--color-velvet);padding:32px 6vw;"><h1 style="font-family:var(--font-display);font-size:2.2rem;color:#fff;margin:0;">My Wishlist ♡</h1></div>
+<main style="padding:32px 6vw 60px;">
+  <div id="wl-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px;"></div>
+  <div id="wl-empty" style="display:none;text-align:center;padding:80px 0;">
+    <p style="font-size:3rem;margin-bottom:16px;">♡</p>
+    <h2 style="font-family:var(--font-display);margin-bottom:10px;">Your wishlist is empty</h2>
+    <p style="color:var(--color-text-muted);margin-bottom:24px;">Save products you love by clicking ♡ on any product.</p>
+    <a href="all-categories.html" class="btn btn--primary">Start Shopping</a>
+  </div>
+</main>
+<script>
+  var favs = JSON.parse(localStorage.getItem("fif_favs")||"[]");
+  var wlProducts = products.filter(function(p){ return favs.indexOf(p.id)!==-1; });
+  var grid = document.getElementById("wl-grid");
+  var empty= document.getElementById("wl-empty");
+  if(!wlProducts.length){ grid.style.display="none"; empty.style.display="block"; }
+  else {
+    wlProducts.forEach(function(p){
+      var card = document.createElement("div");
+      card.style.cssText="background:var(--color-surface);border:1px solid var(--color-border-subtle);border-radius:var(--radius-md);overflow:hidden;box-shadow:var(--shadow-card);display:flex;flex-direction:column;";
+      var link = document.createElement("a"); link.href="product.html?id="+p.id; link.style.textDecoration="none";
+      var iw=document.createElement("div"); iw.style.cssText="aspect-ratio:1/1;overflow:hidden;background:var(--color-marble);";
+      var im=document.createElement("img"); im.src=p.image; im.alt=p.name; im.loading="lazy"; im.style.cssText="width:100%;height:100%;object-fit:cover;transition:transform .4s;";
+      im.addEventListener("mouseover",function(){im.style.transform="scale(1.05)";});
+      im.addEventListener("mouseout", function(){im.style.transform="";});
+      iw.appendChild(im); link.appendChild(iw);
+      var body=document.createElement("div"); body.style.cssText="padding:12px;color:var(--color-text);";
+      var t=document.createElement("p"); t.style.cssText="font-size:.86rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px;"; t.textContent=p.name;
+      var pr=document.createElement("p"); pr.style.cssText="font-size:.9rem;font-weight:600;"; pr.textContent=formatPrice(p.price);
+      body.appendChild(t); body.appendChild(pr); link.appendChild(body); card.appendChild(link);
+      var btns=document.createElement("div"); btns.style.cssText="padding:0 12px 12px;display:flex;gap:8px;";
+      var ab=document.createElement("button"); ab.className="btn btn--primary"; ab.style.cssText="flex:1;font-size:.75rem;padding:8px;"; ab.textContent="Add to Bag";
+      ab.addEventListener("click",function(){ addToCart(p,1,null); ab.textContent="Added ✓"; ab.disabled=true; });
+      var rb=document.createElement("button"); rb.style.cssText="background:none;border:1px solid var(--color-border-subtle);border-radius:var(--radius-pill);padding:8px 12px;font-size:.85rem;cursor:pointer;color:#e05252;"; rb.textContent="✕";
+      rb.addEventListener("click",function(){
+        var f=JSON.parse(localStorage.getItem("fif_favs")||"[]");
+        localStorage.setItem("fif_favs",JSON.stringify(f.filter(function(x){return x!==p.id;})));
+        card.remove(); showToast("Removed from wishlist");
+        if(!document.getElementById("wl-grid").children.length){ grid.style.display="none"; empty.style.display="block"; }
+      });
+      btns.appendChild(ab); btns.appendChild(rb); card.appendChild(btns); grid.appendChild(card);
+    });
+  }
+  injectFooter();
+</script>
+</body>
+</html>

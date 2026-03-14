@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Deal of the Day — Fix-It Forward</title>
+  <link rel="stylesheet" href="styles.css"/>
+  <script src="products.js"></script>
+  <script src="header.js"></script>
+</head>
+<body>
+<script>injectHeader("deals");</script>
+
+<div class="deals-banner">
+  <p style="font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--color-champagne);margin-bottom:8px;">Today Only</p>
+  <h1>Deal of the Day 🔥</h1>
+  <p>Unbeatable prices — ends at midnight tonight</p>
+  <div class="countdown" id="countdown"></div>
+  <p style="font-size:.78rem;color:rgba(255,255,255,.4);">Use code <strong style="color:var(--color-champagne);">SILK-SYNTAX</strong> for an extra 10% off</p>
+</div>
+
+<main style="padding:32px 6vw 60px;">
+  <div class="deals-grid" id="deals-grid"></div>
+</main>
+
+<script>
+  function tick(){
+    var now = new Date(), end = new Date(now);
+    end.setHours(24,0,0,0);
+    var diff = Math.max(0, end - now);
+    var h = Math.floor(diff/3600000);
+    var m = Math.floor((diff%3600000)/60000);
+    var s = Math.floor((diff%60000)/1000);
+    var el = document.getElementById("countdown");
+    el.innerHTML = [["Hours",h],["Minutes",m],["Seconds",s]].map(function(u){
+      return '<div class="countdown-unit"><span class="countdown-num">'+String(u[1]).padStart(2,"0")+'</span><span class="countdown-label">'+u[0]+'</span></div>';
+    }).join("");
+  }
+  tick(); setInterval(tick,1000);
+
+  // Auto-pick top 8 by discount %
+  var dealProducts = products
+    .filter(function(p){ return p.comparePrice; })
+    .sort(function(a,b){ return (1-b.price/b.comparePrice)-(1-a.price/a.comparePrice); })
+    .slice(0,8);
+
+  function starsHTML(r){ return "★".repeat(Math.floor(r))+(r%1>=.5?"½":"")+"☆".repeat(5-Math.ceil(r)); }
+
+  var grid = document.getElementById("deals-grid");
+  dealProducts.forEach(function(p){
+    var pct = Math.round((1-p.price/p.comparePrice)*100);
+    var card = document.createElement("a");
+    card.href = "product.html?id=" + p.id;
+    card.style.cssText = "text-decoration:none;color:var(--color-text);background:var(--color-surface);border:1px solid var(--color-border-subtle);border-radius:var(--radius-md);overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--shadow-card);transition:transform .25s,box-shadow .25s;position:relative;";
+    card.addEventListener("mouseover", function(){ card.style.transform="translateY(-4px)"; card.style.boxShadow="var(--shadow-hover)"; });
+    card.addEventListener("mouseout",  function(){ card.style.transform=""; card.style.boxShadow="var(--shadow-card)"; });
+    card.innerHTML =
+      '<span style="position:absolute;top:10px;left:10px;z-index:2;background:#e05252;color:#fff;font-size:.7rem;font-weight:700;padding:4px 10px;border-radius:99px;letter-spacing:.04em;">-'+pct+'% OFF</span>'+
+      '<div style="aspect-ratio:1/1;overflow:hidden;background:var(--color-marble);"><img src="'+p.image+'" alt="'+p.name+'" loading="lazy" style="width:100%;height:100%;object-fit:cover;transition:transform .4s;"/></div>'+
+      '<div style="padding:14px;display:flex;flex-direction:column;gap:5px;flex:1;">'+
+        '<p style="font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;color:var(--color-text-muted);">'+p.category+'</p>'+
+        '<p style="font-size:.88rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+p.name+'</p>'+
+        '<div style="display:flex;align-items:center;gap:4px;font-size:.72rem;color:var(--color-text-muted);"><span style="color:var(--color-champagne);">'+starsHTML(p.rating)+'</span><span>('+p.reviews+')</span></div>'+
+        '<div style="display:flex;align-items:baseline;gap:8px;margin-top:4px;"><span style="font-size:1.05rem;font-weight:700;">'+formatPrice(p.price)+'</span><span style="font-size:.8rem;color:var(--color-text-muted);text-decoration:line-through;">'+formatPrice(p.comparePrice)+'</span></div>'+
+        '<div style="margin-top:8px;background:var(--color-marble);border-radius:99px;height:5px;overflow:hidden;"><div style="height:100%;background:linear-gradient(90deg,var(--color-champagne),#e05252);border-radius:99px;width:'+(Math.floor(Math.random()*40+40))+'%;"></div></div>'+
+        '<p style="font-size:.7rem;color:#e05252;font-weight:500;">'+Math.floor(Math.random()*15+3)+' sold in last 24h</p>'+
+      '</div>';
+    grid.appendChild(card);
+  });
+  injectFooter();
+</script>
+</body>
+</html>

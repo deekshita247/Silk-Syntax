@@ -5,267 +5,334 @@
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Shop — Fix-It Forward</title>
   <link rel="stylesheet" href="styles.css"/>
-  <link href="https://fonts.googleapis.com/css2?family=주+Scriptina+Pro&display=swap" rel="stylesheet"/>
+  <script src="products.js"></script>
+  <script src="header.js"></script>
   <style>
-    .page-hero {
-      background: var(--color-velvet);
-      padding: 40px 6vw 32px;
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 16px;
-      flex-wrap: wrap;
+    .page-hero{background:var(--color-velvet);padding:40px 6vw 32px;}
+    [data-theme="dark"] .page-hero{background:#0a0d14;}
+    .page-hero h1{font-family:var(--font-display);font-size:clamp(2rem,5vw,3rem);color:#fff;margin:0 0 6px;}
+    .page-hero p{color:rgba(255,255,255,.6);margin:0;font-size:.9rem;}
+    .breadcrumb{padding:12px 6vw;font-size:.78rem;color:var(--color-text-muted);}
+    .breadcrumb a{color:var(--color-text-muted);text-decoration:none;}
+    .breadcrumb a:hover{color:var(--color-text);}
+    .catalog{padding:24px 6vw 60px;}
+    .catalog__header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--color-border-subtle);flex-wrap:wrap;gap:10px;}
+    .catalog__header h2{font-family:var(--font-display);font-size:1.4rem;color:var(--color-text);margin:0;}
+    .catalog__filters{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+    .catalog__filters select,.catalog__filters input[type="search"]{background:var(--color-surface);border:1px solid var(--color-border-subtle);border-radius:var(--radius-pill);color:var(--color-text);padding:7px 14px;font-size:.82rem;font-family:var(--font-body);outline:none;}
+    .results-count{font-size:.8rem;color:var(--color-text-muted);margin-bottom:16px;}
+    .cat-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;}
+    .prod-card{text-decoration:none;color:var(--color-text);background:var(--color-surface);border:1px solid var(--color-border-subtle);border-radius:var(--radius-md);overflow:hidden;display:flex;flex-direction:column;box-shadow:var(--shadow-card);transition:transform .25s,box-shadow .25s;position:relative;}
+    .prod-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-hover);}
+    .prod-card__img{aspect-ratio:1/1;overflow:hidden;background:var(--color-marble);}
+    .prod-card__img img{width:100%;height:100%;object-fit:cover;transition:transform .4s;}
+    .prod-card:hover .prod-card__img img{transform:scale(1.06);}
+    .prod-card__body{padding:12px;display:flex;flex-direction:column;gap:4px;flex:1;}
+    .prod-card__title{font-size:.86rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .prod-card__desc{font-size:.72rem;color:var(--color-text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .prod-card__badge{position:absolute;top:8px;left:8px;background:#e05252;color:#fff;font-size:.6rem;font-weight:700;padding:3px 7px;border-radius:99px;text-transform:uppercase;z-index:1;}
+    .prod-card__fav{position:absolute;top:8px;right:8px;width:28px;height:28px;border-radius:50%;border:1px solid var(--color-border-subtle);background:rgba(255,255,255,.9);display:flex;align-items:center;justify-content:center;font-size:.9rem;cursor:pointer;z-index:1;transition:all .18s;}
+    .prod-card__fav:hover,.prod-card__fav.active{color:#e05252;border-color:#e05252;background:#fff0f0;}
+    .filter-sidebar{background:var(--color-surface);border:1px solid var(--color-border-subtle);border-radius:var(--radius-lg);padding:20px;position:sticky;top:100px;}
+    .filter-sidebar h3{font-family:var(--font-display);font-size:1.1rem;margin:0 0 16px;color:var(--color-text);}
+    .filter-group{margin-bottom:18px;}
+    .filter-group__title{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--color-text-muted);margin-bottom:8px;font-weight:600;display:block;}
+    .filter-option{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:.84rem;color:var(--color-text);}
+    .filter-option input{accent-color:var(--color-champagne);}
+    .price-display{font-size:.78rem;color:var(--color-text-muted);display:flex;justify-content:space-between;margin-top:6px;}
+    .filter-clear{background:none;border:none;font-size:.75rem;color:var(--color-champagne);cursor:pointer;padding:0;text-decoration:underline;margin-top:8px;font-family:var(--font-body);display:block;}
+    .empty-state{grid-column:1/-1;text-align:center;padding:60px 0;}
+    .catalog-layout{display:grid;grid-template-columns:220px 1fr;gap:24px;align-items:start;}
+    @media(max-width:900px){
+      .catalog-layout{grid-template-columns:1fr!important;}
+      .filter-sidebar{display:none;position:static;}
+      .filter-sidebar.show{display:block;}
+      .mobile-filter-btn{display:inline-flex!important;}
+      .cat-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
     }
-    .page-hero h1 {
-      font-family: var(--font-display);
-      font-size: clamp(2rem, 5vw, 3.2rem);
-      color: #fff;
-      margin: 0 0 6px;
-      font-weight: 600;
-    }
-    .page-hero p { color: rgba(255,255,255,.6); margin:0; font-size:.9rem; }
-    .breadcrumb {
-      padding: 12px 6vw;
-      font-size: .78rem;
-      color: var(--color-text-muted);
-    }
-    .breadcrumb a { color: var(--color-text-muted); text-decoration:none; }
-    .breadcrumb a:hover { color: var(--color-velvet); }
-    .catalog { padding: 8px 6vw 60px; }
-    .catalog__header {
-      display:flex;justify-content:space-between;align-items:center;
-      margin-bottom:20px;padding-bottom:16px;
-      border-bottom:1px solid var(--color-border-subtle);flex-wrap:wrap;gap:12px;
-    }
-    .catalog__header h2 {
-      font-family:var(--font-display);font-size:1.4rem;
-      color:var(--color-velvet);margin:0;
-    }
-    .catalog__filters { display:flex;gap:12px;align-items:center;flex-wrap:wrap; }
-    .catalog__filters label {
-      display:inline-flex;align-items:center;gap:6px;
-      font-size:.82rem;color:var(--color-text-muted);
-    }
-    .catalog__filters select,
-    .catalog__filters input[type="search"] {
-      background:var(--color-surface);border-radius:var(--radius-pill);
-      border:1px solid var(--color-border-subtle);color:var(--color-text);
-      padding:7px 14px;font-size:.82rem;font-family:var(--font-body);outline:none;
-    }
-    .catalog__grid {
-      display:grid;
-      grid-template-columns:repeat(4,minmax(0,1fr));
-      gap:20px;
-    }
-    @media(max-width:1100px){ .catalog__grid{ grid-template-columns:repeat(3,minmax(0,1fr)); } }
-    @media(max-width:720px) { .catalog__grid{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
-    .results-count {
-      font-size:.82rem;color:var(--color-text-muted);margin-bottom:16px;
-    }
-    .empty-state {
-      grid-column:1/-1;text-align:center;padding:60px 0;
-      color:var(--color-text-muted);
-    }
-    .empty-state p:first-child { font-size:2.5rem;margin:0 0 12px; }
+    @media(max-width:480px){.cat-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}}
   </style>
 </head>
 <body>
-<script src="products.js"></script>
-<script src="header.js"></script>
+
 <script>
-  // Read ?cat= from URL
-  const urlParams  = new URLSearchParams(window.location.search);
-  const catParam   = urlParams.get("cat") || "All";
-  const isNew      = catParam === "new";
-  const pageTitle  = isNew ? "New In" : (catParam === "All" ? "All Products" : catParam);
-  document.title   = `${pageTitle} — Fix-It Forward`;
+  // runs immediately — scripts already loaded from <head>
+  var params    = new URLSearchParams(window.location.search);
+  var catParam  = params.get("cat") || "All";
+  var qParam    = params.get("q")   || "";
+  var isNew     = catParam === "new";
+  var catName   = isNew ? "All" : catParam;
+  var pageTitle = isNew ? "New In" : (catParam === "All" ? "All Products" : catParam);
+  document.title = pageTitle + " — Fix-It Forward";
   injectHeader(catParam);
 </script>
 
-<div class="breadcrumb">
-  <a href="index.html">Home</a> › <span id="bc-cat">Category</span>
-</div>
-
-<div class="page-hero">
-  <div>
-    <h1 id="page-title">Loading…</h1>
-    <p id="page-sub"></p>
-  </div>
-</div>
+<div class="breadcrumb"><a href="index.html">Home</a> &rsaquo; <span id="bc-cat"></span></div>
+<div class="page-hero"><h1 id="pg-title"></h1><p id="pg-sub"></p></div>
 
 <main>
-  <section class="catalog" aria-label="Product list">
+  <div class="catalog">
     <header class="catalog__header">
-      <h2 id="catalog-heading">Products</h2>
+      <h2 id="cat-heading">Products</h2>
       <div class="catalog__filters">
-        <label>
-          Sort by
+        <button class="btn btn--secondary" id="mobile-filter-btn" style="font-size:.78rem;padding:7px 14px;display:none;"
+          onclick="document.getElementById('filter-sidebar').classList.toggle('show')">Filters</button>
+        <label style="font-size:.82rem;color:var(--color-text-muted);">Sort by
           <select id="sort-select">
             <option value="recommended">Recommended</option>
             <option value="price-asc">Price: Low to High</option>
             <option value="price-desc">Price: High to Low</option>
+            <option value="rating">Top Rated</option>
           </select>
         </label>
-        <label>
-          <span class="visually-hidden">Search</span>
-          <input id="search-input" type="search" placeholder="Search…" autocomplete="off"/>
-        </label>
+        <input id="search-input-cat" type="search" placeholder="Search..."/>
       </div>
     </header>
-
     <p class="results-count" id="results-count"></p>
-
-    <div class="catalog__grid" id="product-grid"></div>
-
-    <template id="product-card-template">
-      <article class="product" data-product-id="">
-        <button class="product__favorite" aria-pressed="false" aria-label="Save product">♡</button>
-        <div class="product__image-wrapper">
-          <img class="product__image" alt="" loading="lazy"/>
-        </div>
-        <div class="product__body">
-          <h3 class="product__title"></h3>
-          <p class="product__description"></p>
-          <div class="product__pricing">
-            <span class="product__price"></span>
-            <span class="product__price--compare"></span>
-          </div>
-          <div class="product__stock" aria-live="polite"></div>
-          <div class="product__actions">
-            <label class="product__qty-label">
-              Qty
-              <input class="product__qty-input" type="number" min="1" max="9" step="1" value="1"/>
-            </label>
-            <button class="btn btn--primary product__add">Add to Bag</button>
-          </div>
-        </div>
-      </article>
-    </template>
-  </section>
+    <div class="catalog-layout">
+      <div class="filter-sidebar" id="filter-sidebar"></div>
+      <div><div class="cat-grid" id="product-grid"></div></div>
+    </div>
+  </div>
+  <div id="rv-section" style="display:none;">
+    <div class="recently-viewed"><h3>Recently Viewed</h3><div class="rv-scroll" id="rv-container"></div></div>
+  </div>
 </main>
 
 <script>
-  // ── Page setup ──────────────────────────────────────────────
-  const catName   = catParam === "new" ? "All" : catParam;
-  const headingEl = document.getElementById("page-title");
-  const subEl     = document.getElementById("page-sub");
-  const bcEl      = document.getElementById("bc-cat");
-  const catHeadEl = document.getElementById("catalog-heading");
-
-  headingEl.textContent  = pageTitle;
-  bcEl.textContent       = pageTitle;
-  catHeadEl.textContent  = pageTitle;
-  subEl.textContent      = catParam === "new"
+  // ── Labels ──────────────────────────────────────────────────
+  document.getElementById("bc-cat").textContent      = pageTitle;
+  document.getElementById("pg-title").textContent    = pageTitle;
+  document.getElementById("cat-heading").textContent = pageTitle;
+  document.getElementById("pg-sub").textContent      = isNew
     ? "The latest arrivals just dropped."
-    : `Explore our ${pageTitle} collection.`;
+    : "Explore our " + pageTitle + " collection.";
+  if (qParam) document.getElementById("search-input-cat").value = qParam;
 
-  // ── Render products ─────────────────────────────────────────
-  function renderProducts(list) {
-    const grid     = document.getElementById("product-grid");
-    const template = document.getElementById("product-card-template");
-    const countEl  = document.getElementById("results-count");
+  // ── Max price in USD (for slider) ───────────────────────────
+  var MAX_PRICE_USD = Math.max.apply(null, products.map(function(p){ return p.price; }));
+  // slider value = actual USD price (0 to MAX_PRICE_USD)
+  var sidebar = document.getElementById("filter-sidebar");
+
+  // ── Build filter sidebar in JS ───────────────────────────────
+  var h3 = document.createElement("h3");
+  h3.textContent = "Filters";
+  sidebar.appendChild(h3);
+
+  // Price group
+  var pg = document.createElement("div"); pg.className = "filter-group";
+  var pt = document.createElement("span"); pt.className = "filter-group__title"; pt.textContent = "Price Range";
+  pg.appendChild(pt);
+
+  var slider = document.createElement("input");
+  slider.type = "range";
+  slider.id   = "price-max";
+  slider.min  = "0";
+  slider.max  = String(Math.ceil(MAX_PRICE_USD)); // max = highest USD price
+  slider.value= String(Math.ceil(MAX_PRICE_USD)); // default = show ALL products
+  slider.step = "1";
+  slider.style.cssText = "width:100%;accent-color:var(--color-champagne);margin-top:6px;";
+  slider.addEventListener("input", function(){ updatePriceLabel(); applyFilters(); });
+  pg.appendChild(slider);
+
+  var pd = document.createElement("div"); pd.className = "price-display";
+  pd.innerHTML = "<span>" + currentRegion.symbol + " 0</span><span id='price-max-lbl'></span>";
+  pg.appendChild(pd);
+  sidebar.appendChild(pg);
+
+  // Size group (only for relevant categories)
+  var sizeCats = ["Clothes","Fitness","All"];
+  if (sizeCats.indexOf(catName) !== -1) {
+    var sg = document.createElement("div"); sg.className = "filter-group";
+    var st = document.createElement("span"); st.className = "filter-group__title"; st.textContent = "Size";
+    sg.appendChild(st);
+    ["XS","S","M","L","XL","XXL"].forEach(function(s){
+      var lbl = document.createElement("label"); lbl.className = "filter-option";
+      var cb  = document.createElement("input"); cb.type = "checkbox"; cb.className = "size-filter"; cb.value = s;
+      cb.addEventListener("change", applyFilters);
+      lbl.appendChild(cb);
+      lbl.appendChild(document.createTextNode(" " + s));
+      sg.appendChild(lbl);
+    });
+    sidebar.appendChild(sg);
+  }
+
+  // Rating group
+  var rg = document.createElement("div"); rg.className = "filter-group";
+  var rt = document.createElement("span"); rt.className = "filter-group__title"; rt.textContent = "Rating";
+  rg.appendChild(rt);
+  [4, 3, 2].forEach(function(r){
+    var lbl = document.createElement("label"); lbl.className = "filter-option";
+    var rb  = document.createElement("input"); rb.type = "radio"; rb.name = "rating-filter"; rb.value = String(r);
+    rb.addEventListener("change", applyFilters);
+    lbl.appendChild(rb);
+    lbl.appendChild(document.createTextNode(" " + "★".repeat(r) + " & up"));
+    rg.appendChild(lbl);
+  });
+  var la = document.createElement("label"); la.className = "filter-option";
+  var ra = document.createElement("input"); ra.type = "radio"; ra.name = "rating-filter"; ra.value = "0"; ra.checked = true;
+  ra.addEventListener("change", applyFilters);
+  la.appendChild(ra);
+  la.appendChild(document.createTextNode(" All ratings"));
+  rg.appendChild(la);
+  sidebar.appendChild(rg);
+
+  // Clear button
+  var clrBtn = document.createElement("button"); clrBtn.className = "filter-clear"; clrBtn.textContent = "Clear all filters";
+  clrBtn.addEventListener("click", clearFilters);
+  sidebar.appendChild(clrBtn);
+
+  // ── Update price label ───────────────────────────────────────
+  function updatePriceLabel(){
+    var usdVal = parseFloat(document.getElementById("price-max").value);
+    var converted = (usdVal * currentRegion.rate).toFixed(0);
+    document.getElementById("price-max-lbl").textContent = currentRegion.symbol + " " + converted;
+  }
+  updatePriceLabel();
+
+  // ── Stars helper ─────────────────────────────────────────────
+  function starsHTML(r){
+    return "★".repeat(Math.floor(r)) + (r % 1 >= 0.5 ? "½" : "") + "☆".repeat(5 - Math.ceil(r));
+  }
+
+  // ── Apply filters ────────────────────────────────────────────
+  function applyFilters(){
+    var query      = (document.getElementById("search-input-cat").value || "").toLowerCase().trim();
+    var sort       = document.getElementById("sort-select").value;
+    var maxUSD     = parseFloat(document.getElementById("price-max").value); // already in USD
+    var minRating  = parseFloat((document.querySelector("input[name='rating-filter']:checked") || {value:"0"}).value);
+    var selSizes   = [];
+    document.querySelectorAll(".size-filter:checked").forEach(function(c){ selSizes.push(c.value); });
+
+    var list = products.filter(function(p){
+      var matchCat    = catName === "All" || p.category === catName;
+      var matchSearch = !query ||
+                        p.name.toLowerCase().indexOf(query) !== -1 ||
+                        p.description.toLowerCase().indexOf(query) !== -1;
+      var matchPrice  = p.price <= maxUSD;  // compare USD to USD — no conversion needed
+      var matchRating = p.rating >= minRating;
+      var matchSize   = selSizes.length === 0 ||
+                        !p.sizes || p.sizes.length === 0 ||
+                        p.sizes.some(function(s){ return selSizes.indexOf(s) !== -1; });
+      return matchCat && matchSearch && matchPrice && matchRating && matchSize;
+    });
+
+    if (sort === "price-asc")  list.sort(function(a,b){ return a.price - b.price; });
+    if (sort === "price-desc") list.sort(function(a,b){ return b.price - a.price; });
+    if (sort === "rating")     list.sort(function(a,b){ return b.rating - a.rating; });
+
+    renderGrid(list);
+  }
+
+  // ── Render product grid ──────────────────────────────────────
+  function renderGrid(list){
+    var grid = document.getElementById("product-grid");
+    var cnt  = document.getElementById("results-count");
     grid.innerHTML = "";
-    countEl.textContent = `${list.length} product${list.length !== 1 ? "s" : ""} found`;
+    cnt.textContent = list.length + " product" + (list.length !== 1 ? "s" : "") + " found";
 
-    if (list.length === 0) {
-      grid.innerHTML = `<div class="empty-state">
-        <p>🔍</p><p>No products found in this category.</p>
-        <a href="index.html" class="btn btn--primary" style="margin-top:16px;">Back to Home</a>
-      </div>`;
-      return;
+    if (!list.length){
+      var em = document.createElement("div"); em.className = "empty-state";
+      em.innerHTML = "<p style='font-size:2rem;margin-bottom:10px;'>&#128269;</p>" +
+                     "<p style='color:var(--color-text-muted);'>No products match your filters.</p>";
+      var cb3 = document.createElement("button"); cb3.className = "btn btn--secondary";
+      cb3.style.marginTop = "12px"; cb3.textContent = "Clear Filters";
+      cb3.addEventListener("click", clearFilters);
+      em.appendChild(cb3); grid.appendChild(em); return;
     }
 
-    list.forEach(product => {
-      const clone   = template.content.cloneNode(true);
-      const article = clone.querySelector(".product");
-      article.dataset.productId = product.id;
+    list.forEach(function(p){
+      var discPct = p.comparePrice ? Math.round((1 - p.price / p.comparePrice) * 100) : 0;
+      var favs    = JSON.parse(localStorage.getItem("fif_favs") || "[]");
+      var isFav   = favs.indexOf(p.id) !== -1;
 
-      if (product.comparePrice) {
-        const badge = document.createElement("span");
-        badge.className   = "product__badge";
-        const pct         = Math.round((1 - product.price / product.comparePrice) * 100);
-        badge.textContent = `-${pct}%`;
-        article.appendChild(badge);
+      var card = document.createElement("a");
+      card.href      = "product.html?id=" + p.id;
+      card.className = "prod-card";
+
+      // Discount badge
+      if (discPct){
+        var bdg = document.createElement("span"); bdg.className = "prod-card__badge";
+        bdg.textContent = "-" + discPct + "%"; card.appendChild(bdg);
       }
 
-      clone.querySelector(".product__image").src             = product.image;
-      clone.querySelector(".product__image").alt             = product.name;
-      clone.querySelector(".product__title").textContent     = product.name;
-      clone.querySelector(".product__description").textContent = product.description;
-      clone.querySelector(".product__price").textContent     = formatPrice(product.price);
-
-      const compareEl = clone.querySelector(".product__price--compare");
-      if (product.comparePrice) {
-        compareEl.textContent = formatPrice(product.comparePrice);
-      } else {
-        compareEl.style.display = "none";
-      }
-
-      const stockEl = clone.querySelector(".product__stock");
-      if (product.stock === 0) {
-        stockEl.textContent = "Out of stock";
-        stockEl.style.color = "#e05252";
-        clone.querySelector(".product__add").disabled    = true;
-        clone.querySelector(".product__add").textContent = "Unavailable";
-      } else if (product.stock <= 5) {
-        stockEl.textContent = `Only ${product.stock} left!`;
-        stockEl.style.color = "#d97706";
-      } else {
-        stockEl.textContent = "In stock";
-      }
-
-      const favBtn    = clone.querySelector(".product__favorite");
-      const savedFavs = JSON.parse(localStorage.getItem("fif_favs") || "[]");
-      if (savedFavs.includes(product.id)) {
-        favBtn.textContent = "♥";
-        favBtn.style.color = "#e05252";
-        favBtn.setAttribute("aria-pressed","true");
-      }
-      favBtn.addEventListener("click", () => {
-        let favs = JSON.parse(localStorage.getItem("fif_favs") || "[]");
-        if (favs.includes(product.id)) {
-          favs = favs.filter(f => f !== product.id);
-          favBtn.textContent = "♡";
-          favBtn.style.color = "";
-          favBtn.setAttribute("aria-pressed","false");
-        } else {
-          favs.push(product.id);
-          favBtn.textContent = "♥";
-          favBtn.style.color = "#e05252";
-          favBtn.setAttribute("aria-pressed","true");
-        }
-        localStorage.setItem("fif_favs", JSON.stringify(favs));
+      // Wishlist button
+      var favBtn = document.createElement("button");
+      favBtn.className   = "prod-card__fav" + (isFav ? " active" : "");
+      favBtn.textContent = isFav ? "♥" : "♡";
+      favBtn.addEventListener("click", function(e){
+        e.preventDefault(); e.stopPropagation();
+        var f = JSON.parse(localStorage.getItem("fif_favs") || "[]");
+        var idx = f.indexOf(p.id);
+        if (idx !== -1){ f.splice(idx,1); favBtn.textContent="♡"; favBtn.classList.remove("active"); }
+        else            { f.push(p.id);   favBtn.textContent="♥"; favBtn.classList.add("active"); }
+        localStorage.setItem("fif_favs", JSON.stringify(f));
       });
+      card.appendChild(favBtn);
 
-      clone.querySelector(".product__add").addEventListener("click", () => {
-        const qty = parseInt(clone.querySelector(".product__qty-input").value) || 1;
-        addToCart(product, qty);
-      });
+      // Image
+      var iw = document.createElement("div"); iw.className = "prod-card__img";
+      var im = document.createElement("img"); im.src = p.image; im.alt = p.name; im.loading = "lazy";
+      iw.appendChild(im); card.appendChild(iw);
 
-      grid.appendChild(clone);
+      // Body
+      var body = document.createElement("div"); body.className = "prod-card__body";
+
+      var title = document.createElement("p"); title.className = "prod-card__title"; title.textContent = p.name; body.appendChild(title);
+      var desc  = document.createElement("p"); desc.className  = "prod-card__desc";  desc.textContent  = p.description; body.appendChild(desc);
+
+      // Price row
+      var pr = document.createElement("div"); pr.style.cssText = "display:flex;align-items:baseline;gap:6px;margin-top:4px;";
+      var pe = document.createElement("span"); pe.className = "prod-card__price"; pe.textContent = formatPrice(p.price); pr.appendChild(pe);
+      if (p.comparePrice){
+        var cp = document.createElement("span"); cp.style.cssText = "font-size:.72rem;color:var(--color-text-muted);text-decoration:line-through;";
+        cp.textContent = formatPrice(p.comparePrice); pr.appendChild(cp);
+      }
+      body.appendChild(pr);
+
+      // Stars
+      var rr = document.createElement("div"); rr.style.cssText = "display:flex;align-items:center;gap:4px;margin-top:2px;font-size:.7rem;color:var(--color-text-muted);";
+      var ss = document.createElement("span"); ss.style.color = "var(--color-champagne)"; ss.style.fontSize = ".78rem"; ss.textContent = starsHTML(p.rating); rr.appendChild(ss);
+      var rc = document.createElement("span"); rc.textContent = "(" + p.reviews + ")"; rr.appendChild(rc);
+      body.appendChild(rr);
+
+      // Stock warning
+      if (p.stock === 0){
+        var oos = document.createElement("span"); oos.style.cssText = "font-size:.72rem;color:#e05252;margin-top:2px;"; oos.textContent = "Out of stock"; body.appendChild(oos);
+      } else if (p.stock <= 5){
+        var low = document.createElement("span"); low.style.cssText = "font-size:.72rem;color:#d97706;margin-top:2px;"; low.textContent = "Only " + p.stock + " left!"; body.appendChild(low);
+      }
+
+      card.appendChild(body);
+      grid.appendChild(card);
     });
   }
 
-  function getFiltered() {
-    const query = document.getElementById("search-input").value.toLowerCase().trim();
-    const sort  = document.getElementById("sort-select").value;
-
-    let list = products.filter(p => {
-      const matchCat    = catName === "All" || p.category === catName;
-      const matchSearch = p.name.toLowerCase().includes(query) ||
-                          p.description.toLowerCase().includes(query);
-      return matchCat && matchSearch;
-    });
-
-    if (sort === "price-asc")  list.sort((a,b) => a.price - b.price);
-    if (sort === "price-desc") list.sort((a,b) => b.price - a.price);
-    return list;
+  // ── Clear all filters ────────────────────────────────────────
+  function clearFilters(){
+    document.getElementById("price-max").value = String(Math.ceil(MAX_PRICE_USD));
+    document.querySelectorAll(".size-filter").forEach(function(c){ c.checked = false; });
+    var allR = document.querySelector("input[name='rating-filter'][value='0']");
+    if (allR) allR.checked = true;
+    document.getElementById("search-input-cat").value = "";
+    document.getElementById("sort-select").value = "recommended";
+    updatePriceLabel();
+    applyFilters();
   }
 
-  document.getElementById("search-input").addEventListener("input",  () => renderProducts(getFiltered()));
-  document.getElementById("sort-select").addEventListener("change", () => renderProducts(getFiltered()));
+  // ── Event listeners ──────────────────────────────────────────
+  document.getElementById("search-input-cat").addEventListener("input", applyFilters);
+  document.getElementById("sort-select").addEventListener("change", applyFilters);
 
-  renderProducts(getFiltered());
+  // ── First render ─────────────────────────────────────────────
+  applyFilters();
+
+  // ── Recently viewed ──────────────────────────────────────────
+  renderRecentlyViewed("rv-container");
+  if (document.getElementById("rv-container").children.length > 0){
+    document.getElementById("rv-section").style.display = "block";
+  }
+
   injectFooter();
 </script>
 </body>
