@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Shop — Fix-It Forward</title>
+  <link rel="stylesheet" href="styles.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=주+Scriptina+Pro&display=swap" rel="stylesheet"/>
+  <style>
+    .page-hero {
+      background: var(--color-velvet);
+      padding: 40px 6vw 32px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .page-hero h1 {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      color: #fff;
+      margin: 0 0 6px;
+      font-weight: 600;
+    }
+    .page-hero p { color: rgba(255,255,255,.6); margin:0; font-size:.9rem; }
+    .breadcrumb {
+      padding: 12px 6vw;
+      font-size: .78rem;
+      color: var(--color-text-muted);
+    }
+    .breadcrumb a { color: var(--color-text-muted); text-decoration:none; }
+    .breadcrumb a:hover { color: var(--color-velvet); }
+    .catalog { padding: 8px 6vw 60px; }
+    .catalog__header {
+      display:flex;justify-content:space-between;align-items:center;
+      margin-bottom:20px;padding-bottom:16px;
+      border-bottom:1px solid var(--color-border-subtle);flex-wrap:wrap;gap:12px;
+    }
+    .catalog__header h2 {
+      font-family:var(--font-display);font-size:1.4rem;
+      color:var(--color-velvet);margin:0;
+    }
+    .catalog__filters { display:flex;gap:12px;align-items:center;flex-wrap:wrap; }
+    .catalog__filters label {
+      display:inline-flex;align-items:center;gap:6px;
+      font-size:.82rem;color:var(--color-text-muted);
+    }
+    .catalog__filters select,
+    .catalog__filters input[type="search"] {
+      background:var(--color-surface);border-radius:var(--radius-pill);
+      border:1px solid var(--color-border-subtle);color:var(--color-text);
+      padding:7px 14px;font-size:.82rem;font-family:var(--font-body);outline:none;
+    }
+    .catalog__grid {
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:20px;
+    }
+    @media(max-width:1100px){ .catalog__grid{ grid-template-columns:repeat(3,minmax(0,1fr)); } }
+    @media(max-width:720px) { .catalog__grid{ grid-template-columns:repeat(2,minmax(0,1fr)); } }
+    .results-count {
+      font-size:.82rem;color:var(--color-text-muted);margin-bottom:16px;
+    }
+    .empty-state {
+      grid-column:1/-1;text-align:center;padding:60px 0;
+      color:var(--color-text-muted);
+    }
+    .empty-state p:first-child { font-size:2.5rem;margin:0 0 12px; }
+  </style>
+</head>
+<body>
+<script src="products.js"></script>
+<script src="header.js"></script>
+<script>
+  // Read ?cat= from URL
+  const urlParams  = new URLSearchParams(window.location.search);
+  const catParam   = urlParams.get("cat") || "All";
+  const isNew      = catParam === "new";
+  const pageTitle  = isNew ? "New In" : (catParam === "All" ? "All Products" : catParam);
+  document.title   = `${pageTitle} — Fix-It Forward`;
+  injectHeader(catParam);
+</script>
+
+<div class="breadcrumb">
+  <a href="index.html">Home</a> › <span id="bc-cat">Category</span>
+</div>
+
+<div class="page-hero">
+  <div>
+    <h1 id="page-title">Loading…</h1>
+    <p id="page-sub"></p>
+  </div>
+</div>
+
+<main>
+  <section class="catalog" aria-label="Product list">
+    <header class="catalog__header">
+      <h2 id="catalog-heading">Products</h2>
+      <div class="catalog__filters">
+        <label>
+          Sort by
+          <select id="sort-select">
+            <option value="recommended">Recommended</option>
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+          </select>
+        </label>
+        <label>
+          <span class="visually-hidden">Search</span>
+          <input id="search-input" type="search" placeholder="Search…" autocomplete="off"/>
+        </label>
+      </div>
+    </header>
+
+    <p class="results-count" id="results-count"></p>
+
+    <div class="catalog__grid" id="product-grid"></div>
+
+    <template id="product-card-template">
+      <article class="product" data-product-id="">
+        <button class="product__favorite" aria-pressed="false" aria-label="Save product">♡</button>
+        <div class="product__image-wrapper">
+          <img class="product__image" alt="" loading="lazy"/>
+        </div>
+        <div class="product__body">
+          <h3 class="product__title"></h3>
+          <p class="product__description"></p>
+          <div class="product__pricing">
+            <span class="product__price"></span>
+            <span class="product__price--compare"></span>
+          </div>
+          <div class="product__stock" aria-live="polite"></div>
+          <div class="product__actions">
+            <label class="product__qty-label">
+              Qty
+              <input class="product__qty-input" type="number" min="1" max="9" step="1" value="1"/>
+            </label>
+            <button class="btn btn--primary product__add">Add to Bag</button>
+          </div>
+        </div>
+      </article>
+    </template>
+  </section>
+</main>
+
+<script>
+  // ── Page setup ──────────────────────────────────────────────
+  const catName   = catParam === "new" ? "All" : catParam;
+  const headingEl = document.getElementById("page-title");
+  const subEl     = document.getElementById("page-sub");
+  const bcEl      = document.getElementById("bc-cat");
+  const catHeadEl = document.getElementById("catalog-heading");
+
+  headingEl.textContent  = pageTitle;
+  bcEl.textContent       = pageTitle;
+  catHeadEl.textContent  = pageTitle;
+  subEl.textContent      = catParam === "new"
+    ? "The latest arrivals just dropped."
+    : `Explore our ${pageTitle} collection.`;
+
+  // ── Render products ─────────────────────────────────────────
+  function renderProducts(list) {
+    const grid     = document.getElementById("product-grid");
+    const template = document.getElementById("product-card-template");
+    const countEl  = document.getElementById("results-count");
+    grid.innerHTML = "";
+    countEl.textContent = `${list.length} product${list.length !== 1 ? "s" : ""} found`;
+
+    if (list.length === 0) {
+      grid.innerHTML = `<div class="empty-state">
+        <p>🔍</p><p>No products found in this category.</p>
+        <a href="index.html" class="btn btn--primary" style="margin-top:16px;">Back to Home</a>
+      </div>`;
+      return;
+    }
+
+    list.forEach(product => {
+      const clone   = template.content.cloneNode(true);
+      const article = clone.querySelector(".product");
+      article.dataset.productId = product.id;
+
+      if (product.comparePrice) {
+        const badge = document.createElement("span");
+        badge.className   = "product__badge";
+        const pct         = Math.round((1 - product.price / product.comparePrice) * 100);
+        badge.textContent = `-${pct}%`;
+        article.appendChild(badge);
+      }
+
+      clone.querySelector(".product__image").src             = product.image;
+      clone.querySelector(".product__image").alt             = product.name;
+      clone.querySelector(".product__title").textContent     = product.name;
+      clone.querySelector(".product__description").textContent = product.description;
+      clone.querySelector(".product__price").textContent     = formatPrice(product.price);
+
+      const compareEl = clone.querySelector(".product__price--compare");
+      if (product.comparePrice) {
+        compareEl.textContent = formatPrice(product.comparePrice);
+      } else {
+        compareEl.style.display = "none";
+      }
+
+      const stockEl = clone.querySelector(".product__stock");
+      if (product.stock === 0) {
+        stockEl.textContent = "Out of stock";
+        stockEl.style.color = "#e05252";
+        clone.querySelector(".product__add").disabled    = true;
+        clone.querySelector(".product__add").textContent = "Unavailable";
+      } else if (product.stock <= 5) {
+        stockEl.textContent = `Only ${product.stock} left!`;
+        stockEl.style.color = "#d97706";
+      } else {
+        stockEl.textContent = "In stock";
+      }
+
+      const favBtn    = clone.querySelector(".product__favorite");
+      const savedFavs = JSON.parse(localStorage.getItem("fif_favs") || "[]");
+      if (savedFavs.includes(product.id)) {
+        favBtn.textContent = "♥";
+        favBtn.style.color = "#e05252";
+        favBtn.setAttribute("aria-pressed","true");
+      }
+      favBtn.addEventListener("click", () => {
+        let favs = JSON.parse(localStorage.getItem("fif_favs") || "[]");
+        if (favs.includes(product.id)) {
+          favs = favs.filter(f => f !== product.id);
+          favBtn.textContent = "♡";
+          favBtn.style.color = "";
+          favBtn.setAttribute("aria-pressed","false");
+        } else {
+          favs.push(product.id);
+          favBtn.textContent = "♥";
+          favBtn.style.color = "#e05252";
+          favBtn.setAttribute("aria-pressed","true");
+        }
+        localStorage.setItem("fif_favs", JSON.stringify(favs));
+      });
+
+      clone.querySelector(".product__add").addEventListener("click", () => {
+        const qty = parseInt(clone.querySelector(".product__qty-input").value) || 1;
+        addToCart(product, qty);
+      });
+
+      grid.appendChild(clone);
+    });
+  }
+
+  function getFiltered() {
+    const query = document.getElementById("search-input").value.toLowerCase().trim();
+    const sort  = document.getElementById("sort-select").value;
+
+    let list = products.filter(p => {
+      const matchCat    = catName === "All" || p.category === catName;
+      const matchSearch = p.name.toLowerCase().includes(query) ||
+                          p.description.toLowerCase().includes(query);
+      return matchCat && matchSearch;
+    });
+
+    if (sort === "price-asc")  list.sort((a,b) => a.price - b.price);
+    if (sort === "price-desc") list.sort((a,b) => b.price - a.price);
+    return list;
+  }
+
+  document.getElementById("search-input").addEventListener("input",  () => renderProducts(getFiltered()));
+  document.getElementById("sort-select").addEventListener("change", () => renderProducts(getFiltered()));
+
+  renderProducts(getFiltered());
+  injectFooter();
+</script>
+</body>
+</html>

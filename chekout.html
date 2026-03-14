@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Checkout — Fix-It Forward Shop</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+        /* ── Checkout-specific styles ── */
+        .checkout-wrapper {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 32px 7vw 60px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+        }
+
+        @media (max-width: 720px) {
+            .checkout-wrapper {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .checkout-section {
+            background: var(--color-surface);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .checkout-section h2 {
+            margin: 0 0 20px;
+            font-size: 1.1rem;
+            border-bottom: 1px solid var(--color-border-subtle);
+            padding-bottom: 12px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            font-size: 0.82rem;
+            color: var(--color-text-muted);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(148, 163, 184, 0.25);
+            border-radius: var(--radius-md);
+            color: var(--color-text);
+            padding: 10px 14px;
+            font-size: 0.9rem;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--color-primary);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        /* Order summary items */
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 10px 0;
+            border-bottom: 1px dashed rgba(148, 163, 184, 0.2);
+            gap: 12px;
+        }
+
+        .order-item:last-child {
+            border-bottom: none;
+        }
+
+        .order-item__name {
+            font-size: 0.85rem;
+            flex: 1;
+        }
+
+        .order-item__qty {
+            font-size: 0.75rem;
+            color: var(--color-text-muted);
+        }
+
+        .order-item__price {
+            font-size: 0.88rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .order-totals {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--color-border-subtle);
+        }
+
+        .order-totals__row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+            color: var(--color-text-muted);
+        }
+
+        .order-totals__row--total {
+            color: var(--color-text);
+            font-weight: 700;
+            font-size: 1rem;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid var(--color-border-subtle);
+        }
+
+        /* Payment section */
+        .payment-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .payment-option:has(input:checked) {
+            border-color: var(--color-primary);
+            background: var(--color-primary-soft);
+        }
+
+        .payment-option input[type="radio"] {
+            accent-color: var(--color-primary);
+        }
+
+        .payment-option label {
+            cursor: pointer;
+            font-size: 0.88rem;
+        }
+
+        /* Success overlay */
+        .success-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(5, 6, 10, 0.92);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+            padding: 24px;
+        }
+
+        .success-overlay.active {
+            display: flex;
+        }
+
+        .success-box {
+            background: var(--color-surface);
+            border-radius: var(--radius-lg);
+            padding: 40px 32px;
+            max-width: 420px;
+            width: 100%;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .success-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+        }
+
+        .success-box h2 {
+            margin: 0 0 10px;
+            font-size: 1.4rem;
+        }
+
+        .success-box p {
+            color: var(--color-text-muted);
+            font-size: 0.9rem;
+            margin: 0 0 24px;
+        }
+
+        .order-id {
+            font-size: 0.78rem;
+            color: var(--color-text-muted);
+            margin-top: 12px;
+        }
+
+        /* Empty cart warning */
+        .empty-warning {
+            text-align: center;
+            padding: 60px 24px;
+            color: var(--color-text-muted);
+        }
+
+        .empty-warning a {
+            color: var(--color-primary);
+            text-decoration: none;
+        }
+
+        /* Step indicator */
+        .checkout-steps {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 20px 7vw;
+            font-size: 0.82rem;
+            color: var(--color-text-muted);
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .step__num {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: rgba(148, 163, 184, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+        }
+
+        .step--active .step__num {
+            background: var(--color-primary);
+            color: #fff;
+        }
+
+        .step--done .step__num {
+            background: #4ade80;
+            color: #000;
+        }
+
+        .step-divider {
+            width: 32px;
+            height: 1px;
+            background: rgba(148, 163, 184, 0.25);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ── Header (same as index.html) ── -->
+    <header class="site-header">
+        <a href="index.html" class="logo" aria-label="Fix It Forward Home">
+            Fix-It <span>Forward</span>
+        </a>
+        <nav class="nav" aria-label="Primary">
+            <button class="nav__toggle" aria-expanded="false" aria-controls="nav-menu">☰</button>
+            <ul id="nav-menu" class="nav__list">
+                <li><a href="index.html#hero">Home</a></li>
+                <li><a href="index.html#catalog">Catalogue</a></li>
+                <li><a href="index.html">← Back to Shop</a></li>
+            </ul>
+        </nav>
+        <a href="index.html" class="btn btn--secondary" style="font-size:0.85rem;padding:7px 14px;">
+            ← Back to Shop
+        </a>
+    </header>
+
+    <!-- ── Step indicator ── -->
+    <div class="checkout-steps">
+        <div class="step step--done">
+            <span class="step__num">✓</span>
+            <span>Cart</span>
+        </div>
+        <div class="step-divider"></div>
+        <div class="step step--active">
+            <span class="step__num">2</span>
+            <span>Checkout</span>
+        </div>
+        <div class="step-divider"></div>
+        <div class="step">
+            <span class="step__num">3</span>
+            <span>Confirmation</span>
+        </div>
+    </div>
+
+    <main>
+        <!-- ── Empty cart warning (shown if cart is empty) ── -->
+        <div class="empty-warning" id="empty-warning" style="display:none;">
+            <p style="font-size:2rem;margin-bottom:12px;">🛒</p>
+            <p style="font-size:1.1rem;color:var(--color-text);margin-bottom:8px;">Your cart is empty!</p>
+            <p><a href="index.html">← Go back and add some products</a></p>
+        </div>
+
+        <!-- ── Main checkout grid ── -->
+        <div class="checkout-wrapper" id="checkout-content">
+
+            <!-- LEFT: Forms -->
+            <div>
+                <!-- Contact Info -->
+                <div class="checkout-section" style="margin-bottom:20px;">
+                    <h2>📋 Contact Information</h2>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="first-name">First Name *</label>
+                            <input type="text" id="first-name" placeholder="Jane" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="last-name">Last Name *</label>
+                            <input type="text" id="last-name" placeholder="Doe" required />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address *</label>
+                        <input type="email" id="email" placeholder="jane@example.com" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" placeholder="+1 (555) 000-0000" />
+                    </div>
+                </div>
+
+                <!-- Shipping Address -->
+                <div class="checkout-section" style="margin-bottom:20px;">
+                    <h2>🚚 Shipping Address</h2>
+                    <div class="form-group">
+                        <label for="address">Street Address *</label>
+                        <input type="text" id="address" placeholder="123 Main Street" required />
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="city">City *</label>
+                            <input type="text" id="city" placeholder="New York" required />
+                        </div>
+                        <div class="form-group">
+                            <label for="zip">ZIP / Postal Code *</label>
+                            <input type="text" id="zip" placeholder="10001" required />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="country">Country *</label>
+                        <select id="country">
+                            <option value="">Select country…</option>
+                            <option value="US">United States</option>
+                            <option value="GB">United Kingdom</option>
+                            <option value="CA">Canada</option>
+                            <option value="AU">Australia</option>
+                            <option value="AE">United Arab Emirates</option>
+                            <option value="IN">India</option>
+                            <option value="DE">Germany</option>
+                            <option value="FR">France</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="notes">Order Notes (optional)</label>
+                        <textarea id="notes" placeholder="Any special instructions for your order…"></textarea>
+                    </div>
+                </div>
+
+                <!-- Payment Method -->
+                <div class="checkout-section">
+                    <h2>💳 Payment Method</h2>
+                    <div class="payment-option">
+                        <input type="radio" name="payment" id="pay-card" value="card" checked />
+                        <label for="pay-card">💳 Credit / Debit Card</label>
+                    </div>
+                    <div class="payment-option">
+                        <input type="radio" name="payment" id="pay-paypal" value="paypal" />
+                        <label for="pay-paypal">🅿️ PayPal</label>
+                    </div>
+                    <div class="payment-option">
+                        <input type="radio" name="payment" id="pay-apple" value="apple" />
+                        <label for="pay-apple">🍎 Apple Pay</label>
+                    </div>
+                    <div class="payment-option">
+                        <input type="radio" name="payment" id="pay-cod" value="cod" />
+                        <label for="pay-cod">💵 Cash on Delivery</label>
+                    </div>
+
+                    <p style="font-size:0.75rem;color:var(--color-text-muted);margin-top:12px;">
+                        🔒 This is a demo store. No real payment will be processed.
+                    </p>
+                </div>
+            </div>
+
+            <!-- RIGHT: Order Summary -->
+            <div>
+                <div class="checkout-section" style="position:sticky;top:80px;">
+                    <h2>🧾 Order Summary</h2>
+                    <div id="order-items">
+                        <!-- Populated by JS -->
+                    </div>
+                    <div class="order-totals">
+                        <div class="order-totals__row">
+                            <span>Subtotal</span>
+                            <span id="summary-subtotal">$0.00</span>
+                        </div>
+                        <div class="order-totals__row">
+                            <span>Shipping</span>
+                            <span id="summary-shipping">Free</span>
+                        </div>
+                        <div class="order-totals__row">
+                            <span>Estimated Tax (8%)</span>
+                            <span id="summary-tax">$0.00</span>
+                        </div>
+                        <div class="order-totals__row order-totals__row--total">
+                            <span>Total</span>
+                            <span id="summary-total">$0.00</span>
+                        </div>
+                    </div>
+
+                    <button
+                        class="btn btn--primary btn--full"
+                        id="place-order-btn"
+                        style="margin-top:20px;padding:14px;"
+                    >
+                        Place Order 🎉
+                    </button>
+
+                    <p style="font-size:0.75rem;color:var(--color-text-muted);text-align:center;margin-top:10px;">
+                        By placing your order you agree to our demo Terms of Service.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- ── Order Success Overlay ── -->
+    <div class="success-overlay" id="success-overlay">
+        <div class="success-box">
+            <div class="success-icon">🎉</div>
+            <h2>Order Placed!</h2>
+            <p>
+                Thank you for your order! In a real store, you would receive a
+                confirmation email shortly.
+            </p>
+            <p id="success-name" style="color:var(--color-text);font-weight:600;"></p>
+            <a href="index.html" class="btn btn--primary btn--full">
+                Continue Shopping →
+            </a>
+            <p class="order-id" id="order-id-display"></p>
+        </div>
+    </div>
+
+    <!-- ── Footer ── -->
+    <footer id="footer" class="site-footer">
+        <p>© <span id="footer-year"></span> Fix-It Forward Shop. All rights reserved.</p>
+        <p class="site-footer__note">This is a demo store. Nothing you order will actually ship.</p>
+    </footer>
+
+    <script>
+        // ── Fix footer year ──
+        document.getElementById("footer-year").textContent = new Date().getFullYear();
+
+        // ── Load cart from localStorage ──
+        const cart = JSON.parse(localStorage.getItem("fif_cart")) || [];
+
+        // ── Show empty warning if cart is empty ──
+        if (cart.length === 0) {
+            document.getElementById("empty-warning").style.display = "block";
+            document.getElementById("checkout-content").style.display = "none";
+        } else {
+            renderOrderSummary();
+        }
+
+        // ── Render order summary ──
+        function renderOrderSummary() {
+            const container = document.getElementById("order-items");
+            container.innerHTML = "";
+
+            cart.forEach(item => {
+                const div = document.createElement("div");
+                div.className = "order-item";
+                div.innerHTML = `
+                    <div style="flex:1;">
+                        <div class="order-item__name">${item.name}</div>
+                        <div class="order-item__qty">Qty: ${item.qty}</div>
+                    </div>
+                    <div class="order-item__price">$${(item.price * item.qty).toFixed(2)}</div>
+                `;
+                container.appendChild(div);
+            });
+
+            const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+            const tax      = subtotal * 0.08;
+            const total    = subtotal + tax;
+            const shipping = subtotal >= 75 ? "Free" : "$5.99";
+            const totalWithShipping = subtotal >= 75 ? total : total + 5.99;
+
+            document.getElementById("summary-subtotal").textContent = `$${subtotal.toFixed(2)}`;
+            document.getElementById("summary-tax").textContent      = `$${tax.toFixed(2)}`;
+            document.getElementById("summary-shipping").textContent = shipping;
+            document.getElementById("summary-total").textContent    = `$${totalWithShipping.toFixed(2)}`;
+        }
+
+        // ── Place order ──
+        document.getElementById("place-order-btn").addEventListener("click", () => {
+            // Basic validation
+            const required = ["first-name", "last-name", "email", "address", "city", "zip", "country"];
+            let valid = true;
+
+            required.forEach(id => {
+                const el = document.getElementById(id);
+                if (!el.value.trim()) {
+                    el.style.borderColor = "var(--color-accent)";
+                    valid = false;
+                } else {
+                    el.style.borderColor = "";
+                }
+            });
+
+            if (!valid) {
+                alert("Please fill in all required fields marked with *");
+                return;
+            }
+
+            // Generate a fake order ID
+            const orderId = "FIF-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+            const firstName = document.getElementById("first-name").value.trim();
+
+            // Show success overlay
+            document.getElementById("success-name").textContent =
+                `Hey ${firstName}, your order is confirmed! 🎊`;
+            document.getElementById("order-id-display").textContent =
+                `Order ID: ${orderId}`;
+
+            document.getElementById("success-overlay").classList.add("active");
+
+            // Clear the cart
+            localStorage.removeItem("fif_cart");
+        });
+
+        // ── Mobile nav toggle ──
+        const navToggle = document.querySelector(".nav__toggle");
+        const navList   = document.getElementById("nav-menu");
+        navToggle.addEventListener("click", () => {
+            const isOpen = navList.style.display === "flex";
+            navList.style.display = isOpen ? "none" : "flex";
+            navList.style.flexDirection = "column";
+            navList.style.position = "absolute";
+            navList.style.top = "60px";
+            navList.style.right = "7vw";
+            navList.style.background = "rgba(8,11,22,0.98)";
+            navList.style.padding = "12px 20px";
+            navList.style.borderRadius = "12px";
+            navList.style.border = "1px solid rgba(255,255,255,0.08)";
+        });
+    </script>
+
+</body>
+</html>
