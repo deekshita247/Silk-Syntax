@@ -382,3 +382,22 @@ a { color: inherit; }
   .hero-categories { grid-template-columns: repeat(2,1fr); }
   .header-icons .theme-toggle span { display: none; }
 }
+
+/* ── Category tile without emoji ── */
+.hero-cat-tile { font-size:.78rem; font-weight:600; letter-spacing:.04em; min-height:60px; }
+.hero-cat-tile__icon { display:none; }
+
+/* ── All-categories banner image ── */
+.cat-card__banner {
+  height:200px;
+  background-size:cover !important;
+  background-position:center !important;
+  position:relative;
+  overflow:hidden;
+}
+.cat-card__banner::after {
+  content:'';
+  position:absolute;
+  inset:0;
+  background:rgba(30,40,69,0.18);
+}

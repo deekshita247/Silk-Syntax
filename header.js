@@ -253,10 +253,10 @@ function injectHeader(activeCat=""){
         </div>
         <div class="auth-area">
           ${user
-            ?`<div class="user-menu-wrap"><button class="user-btn" id="user-menu-btn">👤 ${user.name} ▾</button>
+            ?`<div class="user-menu-wrap"><button class="user-btn" id="user-menu-btn">${user.name} ▾</button>
                <div class="user-dropdown" id="user-dropdown">
-                 <a href="wishlist.html">♡ Wishlist</a>
-                 <button onclick="logoutUser()">🚪 Logout</button>
+                 <a href="wishlist.html">Wishlist</a>
+                 <button onclick="logoutUser()">Logout</button>
                </div></div>`
             :`<button class="btn btn--secondary header-auth-btn" onclick="openAuthModal('login')" style="font-size:.75rem;padding:7px 12px;">Sign In</button>
               <button class="btn btn--primary header-auth-btn" onclick="openAuthModal('register')" style="font-size:.75rem;padding:7px 12px;">Register</button>`
@@ -265,17 +265,17 @@ function injectHeader(activeCat=""){
         <button class="theme-toggle" id="theme-toggle-btn" onclick="toggleTheme()">
           ${isDark?"☀️ <span>Light</span>":"🌙 <span>Dark</span>"}
         </button>
-        <button class="header-cart" data-open-cart="true">🛒 Bag <span class="header-cart__count">0</span></button>
+        <button class="header-cart" data-open-cart="true">Bag <span class="header-cart__count">0</span></button>
       </div>
     </div>
     <nav class="nav">
       <button class="nav__toggle" aria-expanded="false" aria-controls="nav-menu">☰</button>
       <ul id="nav-menu" class="nav__list">
         <li><a href="index.html" ${activeCat===""?"class='active'":""}>Home</a></li>
-        <li class="deals-link"><a href="deals.html" ${activeCat==="deals"?"class='active'":""}>🔥 Deals</a></li>
+        <li class="deals-link"><a href="deals.html" ${activeCat==="deals"?"class='active'":""}>Deals</a></li>
         <li><a href="category.html?cat=new" ${activeCat==="new"?"class='active'":""}>New In</a></li>
         <li><a href="category.html?cat=Electronics" ${activeCat==="Electronics"?"class='active'":""}>Electronics</a></li>
-        <li><a href="category.html?cat=Clothes" ${activeCat==="Clothes"?"class='active'":""}>Clothing</a></li>
+        <li><a href="category.html?cat=Womens" ${activeCat==="Womens"?"class='active'":""}>Women's</a></li><li><a href="category.html?cat=Mens" ${activeCat==="Mens"?"class='active'":""}>Men's</a></li><li><a href="category.html?cat=Kids" ${activeCat==="Kids"?"class='active'":""}>Kids</a></li>
         <li><a href="category.html?cat=Make Up" ${activeCat==="Make Up"?"class='active'":""}>Beauty</a></li>
         <li><a href="category.html?cat=Accessories" ${activeCat==="Accessories"?"class='active'":""}>Accessories</a></li>
         <li><a href="category.html?cat=Fitness" ${activeCat==="Fitness"?"class='active'":""}>Sports</a></li>
@@ -287,7 +287,7 @@ function injectHeader(activeCat=""){
   <div class="cart-backdrop" id="cart-backdrop"></div>
   <aside id="cart-panel" class="cart cart--hidden">
     <header class="cart__header">
-      <h2>🛒 My Bag</h2>
+      <h2>My Bag</h2>
       <button class="cart__close" data-close-cart="true">×</button>
     </header>
     <div class="shipping-bar">
@@ -374,11 +374,11 @@ function injectFooter(){
       </div>
       <div>
         <p class="footer-heading">Shop</p>
-        <a href="category.html?cat=Clothes">Clothing</a>
+        <a href="category.html?cat=Womens" ${activeCat==="Womens"?"class='active'":""}>Women's</a></li><li><a href="category.html?cat=Mens" ${activeCat==="Mens"?"class='active'":""}>Men's</a></li><li><a href="category.html?cat=Kids" ${activeCat==="Kids"?"class='active'":""}>Kids</a>
         <a href="category.html?cat=Make Up">Beauty</a>
         <a href="category.html?cat=Electronics">Electronics</a>
         <a href="category.html?cat=Accessories">Accessories</a>
-        <a href="deals.html">Deals 🔥</a>
+        <a href="deals.html">Deals </a>
       </div>
       <div>
         <p class="footer-heading">Help</p>

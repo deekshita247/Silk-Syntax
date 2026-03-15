@@ -32,12 +32,14 @@
 </main>
 <script>
   var META = {
-    "Electronics":{ icon:"🖥️", bg:"#EEF2FF", desc:"Gadgets, audio, accessories & more" },
-    "Kitchen":    { icon:"🍳", bg:"#FFF7ED", desc:"Tools for every home cook" },
-    "Make Up":    { icon:"💄", bg:"#FDF2F8", desc:"Beauty, skincare & cosmetics" },
-    "Clothes":    { icon:"👗", bg:"#F0FDF4", desc:"Fashion for every occasion" },
-    "Accessories":{ icon:"👜", bg:"#FFFBEB", desc:"Complete your look" },
-    "Fitness":    { icon:"💪", bg:"#EFF6FF", desc:"Gear up and get moving" }
+    "Electronics":{ icon:"🖥️", bg:"https://i.ibb.co/8D4Yb2Dz/360-F-309670293-nvb-HEe-Qf-S6-Ul1-U4f6v-Wd-JHUXKFHz-HEOv.jpg", desc:"Gadgets, audio, accessories & more" },
+    "Kitchen":    { icon:"🍳", bg:"https://i.ibb.co/8D4Yb2Dz/360-F-309670293-nvb-HEe-Qf-S6-Ul1-U4f6v-Wd-JHUXKFHz-HEOv.jpg", desc:"Tools for every home cook" },
+    "Make Up":    { icon:"💄", bg:"https://i.ibb.co/8D4Yb2Dz/360-F-309670293-nvb-HEe-Qf-S6-Ul1-U4f6v-Wd-JHUXKFHz-HEOv.jpg", desc:"Beauty, skincare & cosmetics" },
+    "Womens":{ icon:"👗", bg:"https://i.ibb.co/8D4Yb2Dz/360-F-309670293-nvb-HEe-Qf-S6-Ul1-U4f6v-Wd-JHUXKFHz-HEOv.jpg", desc:"Dresses, tops, jeans & more" },
+    "Mens":    { icon:"👔", bg:"https://i.ibb.co/8D4Yb2Dz/360-F-309670293-nvb-HEe-Qf-S6-Ul1-U4f6v-Wd-JHUXKFHz-HEOv.jpg", desc:"Shirts, blazers, outerwear & more" },
+    "Kids":     { icon:"🧒", bg:"https://i.ibb.co/8D4Yb2Dz/360-F-309670293-nvb-HEe-Qf-S6-Ul1-U4f6v-Wd-JHUXKFHz-HEOv.jpg", desc:"Fun & comfy clothes for little ones" },
+    "Accessories":{ icon:"👜", bg:"https://i.ibb.co/8D4Yb2Dz/360-F-309670293-nvb-HEe-Qf-S6-Ul1-U4f6v-Wd-JHUXKFHz-HEOv.jpg", desc:"Complete your look" },
+    "Fitness":    { icon:"💪", bg:"https://i.ibb.co/8D4Yb2Dz/360-F-309670293-nvb-HEe-Qf-S6-Ul1-U4f6v-Wd-JHUXKFHz-HEOv.jpg", desc:"Gear up and get moving" }
   };
   var seen = {}, cats = [];
   products.forEach(function(p){ if(!seen[p.category]){ seen[p.category]=true; cats.push(p.category); } });
@@ -46,7 +48,7 @@
     var m = META[cat]||{icon:"🛍️",bg:"#F5F5F5",desc:""};
     var n = products.filter(function(p){ return p.category===cat; }).length;
     var a = document.createElement("a"); a.href="category.html?cat="+encodeURIComponent(cat); a.className="cat-card";
-    a.innerHTML='<div class="cat-card__banner" style="background:'+m.bg+';">'+m.icon+'</div>'+
+    a.innerHTML='<div class="cat-card__banner" style="background-image:url("'+m.bg+'");background-size:cover;background-position:center;"></div>'+
       '<div class="cat-card__body"><h2 class="cat-card__name">'+cat+'</h2><p class="cat-card__count">'+n+' products</p><p class="cat-card__desc">'+m.desc+'</p><span class="cat-card__cta">Shop Now →</span></div>';
     grid.appendChild(a);
   });
