@@ -1,131 +1,191 @@
-# Fix-It Forward: Broken Store Challenge
+# Silk-Syntax — Fix-It Forward Shop
 
-Welcome to **Fix-It Forward**.
-
-This repository contains a deliberately incomplete and fragile front-end for a small e‑commerce experience. The goal of the event is to transform this unstable prototype into a polished, reliable, and production-ready online store.
+> A complete transformation of a broken e-commerce prototype into a fully functional, production-ready online store.
 
 ---
 
-## Event Concept
+## Overview
 
-**Fix-It Forward** is a focused website transformation event. You start with a visually appealing but unreliable store and push it all the way to a professional, usable, and market-ready experience.
+This project was built as part of the **Fix-It Forward** hackathon challenge. The original repository contained just three files — a blank HTML shell and a CSS file. The product grid was empty, nothing was functional, and there was no backend.
 
-You will:
-
-- Analyse and understand an existing front-end implementation.
-- Repair inconsistencies and flaws in behaviour, experience, and structure.
-- Extend the project with real backend capabilities and additional features.
-
-By the end, the store should feel like something you would be comfortable putting in front of real customers.
+Starting from that broken prototype, this submission transforms it into a polished, fully working fashion and lifestyle e-commerce store called **Silk-Syntax**.
 
 ---
 
-## Scenario
+## Live Demo
 
-You have inherited a front-end prototype for a fictional shop called **Fix-It Forward Shop**. It looks reasonably modern and seems to work at a glance, but it was built quickly for a demo and never hardened for real use.
+**VIDEO LINK**
+https://drive.google.com/file/d/1V0qNzjbleF_eteRvNEY9prE0Xmsrl_2w/view?usp=sharing
 
-Your job during the event is to:
+**Deployment:** [https://bejewelled-mandazi-6e89c8.netlify.app/](https://bejewelled-mandazi-6e89c8.netlify.app/)
 
-- Turn this into a **smooth, efficient, fully functional** online store prototype.
-- Treat the current codebase as a starting point, not a finished product.
+**GitHub Repository:** [https://github.com/deekshita247/Silk-Syntax](https://github.com/deekshita247/Silk-Syntax)
 
-There is no backend yet: all data is currently in the front-end. Part of your challenge is designing and wiring up proper backend behaviour.
-
----
-
-## Your Objectives
-
-During the event, aim to achieve the following:
-
-1. **Aesthetically refined**
-   - Maintain or improve the visual quality of the UI.
-   - Ensure the design feels consistent, intentional, and on-brand for an online store.
-
-2. **Fully functional**
-   - Make the store behave like a real e‑commerce experience from a user’s point of view.
-   - Support browsing products, adding them to a cart, reviewing a summary, and completing a checkout flow.
-
-3. **Technically structured**
-   - Organise the code so that it is maintainable and extensible.
-   - Prepare the project so that future engineers could comfortably build on top of it.
-
-4. **Ready for real‑world application**
-   - Treat performance, accessibility, and resilience as first‑class concerns.
-   - Design your changes as if this store might eventually receive real traffic.
 
 ---
 
-## What You’re Given
+## What Was Broken (Before)
 
-This repo currently contains:
-
-- `index.html`  
-  The main application shell and markup for the store.
-
-- `styles.css`  
-  Global styles and layout rules for the site.
-
-- `app.js`  
-  Front‑end logic for rendering products, managing a cart, and handling the basic flow.
-
-There is intentionally **no backend** in this repository yet.
+- Empty product grid — no products rendered at all
+- No JavaScript file (`app.js` was missing entirely)
+- No cart functionality
+- No navigation — links went nowhere
+- No backend or data layer
+- Footer showed hardcoded year `2023`
+- Mobile navigation toggle did nothing
+- Checkout button was permanently disabled
+- No search, sort, or filter functionality
+- Hero section read *"Shipping might or might not work"*
 
 ---
 
-## What You Are Expected To Build
+## What Was Built (After)
 
-You are encouraged to:
+### Core Fixes
+- Created `products.js` as a structured mock data layer with 65 products across 8 categories
+- Built `app.js` and later `header.js` to power all frontend logic
+- Fixed the product grid — all products now render correctly with images, prices, stock levels and ratings
+- Fixed the footer year to update dynamically
+- Fixed the mobile navigation toggle
+- Fixed the checkout button — now only enables when cart has items
+- Fixed search, sort, and filter — all work simultaneously
 
-- Stabilise and refine the existing front-end experience.
-- Introduce a backend of your choice (for example: a simple API, a small database, or a mocked service layer) to support:
-  - Product listing and retrieval.
-  - Cart or order persistence.
-  - A basic checkout or order‑submission flow.
-- Add any extra features that you think make the experience more realistic or delightful.
+### New Pages Built
+| Page | Description |
+|---|---|
+| `product.html` | Full product detail page with size selector, quantity, ratings, reviews, and recommendations |
+| `category.html` | Dedicated page per category with filter sidebar |
+| `deals.html` | Deal of the Day page with live countdown timer |
+| `wishlist.html` | Saved products page |
+| `checkout.html` | Simplified checkout with form validation |
+| `order-confirmation.html` | Full order confirmed page with order ID and receipt |
+| `all-categories.html` | Browse all 8 categories |
 
-Technology choices for the backend and any additional tooling are up to you, as long as the result is coherent and demonstrable.
+### Features Added
+- **65 products** across 8 categories — Electronics, Kitchen, Make Up, Women's, Men's, Kids, Accessories, Fitness
+- **Dark / Light mode** toggle with smooth transitions
+- **Region selector** — UAE (AED), US ($), UK (£), India (₹) with live price conversion
+- **User authentication** — register and login with email and password (localStorage)
+- **Cart persistence** — cart saved to localStorage, survives page refresh
+- **Free shipping progress bar** inside cart panel
+- **Promo code** — `SILK-SYNTAX` applies 10% discount
+- **Product ratings** — pre-set star ratings on all products
+- **User reviews** — logged-in users can submit reviews, stored in localStorage
+- **Size selector** — S/M/L/XL for clothing, age sizes for kids
+- **Wishlist** — heart-save products, view on dedicated wishlist page
+- **Recently viewed** bar on product and category pages
+- **Deal of the Day** — auto-picks 8 highest-discount products, countdown to midnight
+- **Filter sidebar** — filter by price range, size, and star rating
+- **Micro-animations** — card hover lift, cart item slide-in, button transitions
+- **Cookie consent** banner
+- **Trust badges** strip
+- **Announcement bar** with dismissal
+- **Responsive mobile design** — hamburger menu, adaptive grid, full-width cart
+
+### Brand & Design
+- Custom luxury brand palette — Silk `#F7F4EF`, Marble `#F0EDE6`, Champagne `#C9A96E`, Velvet `#1E2845`
+- Script logo font using Google Fonts (Great Vibes)
+- Display font: Cormorant Garamond
+- Body font: Jost
+- Category split: Clothes → Women's, Men's, Kids (3 separate pages)
+- Custom banner images on homepage
 
 ---
 
-## How to Run the Project
+## Project Structure
 
-This project is a static front-end and can be opened directly in a browser.
-
-**Option 1: Open the file directly**
-
-1. Open the repository folder in your editor.  
-2. Open `index.html` in your browser (for example, via your editor’s “Open in Browser” command or by double‑clicking the file in your file explorer).
-
-**Option 2: Run a simple local web server**
-
-You may prefer to serve the files over HTTP (for example, if you add API endpoints later):
-
-1. From the project root, start a small static server of your choice (for example, using Python, Node, or your preferred tooling).
-2. Visit the URL that your server prints (commonly `http://localhost:8000` or similar).
-
-No build step is required for the initial version: the app is plain HTML, CSS, and JavaScript.
-
----
-
-## Suggested Extensions (Optional)
-
-Once the basic experience feels solid, consider exploring:
-
-- User accounts and saved carts.
-- Basic inventory management (stock levels, availability).
-- Simple promotions or discount logic.
-- Order confirmation views and lightweight tracking.
-- Improved analytics or event tracking.
-
-These are not mandatory, but they mirror real‑world expectations for a more complete store.
+```
+Silk-Syntax/
+├── index.html              # Homepage — promo banners, hero, countdown
+├── category.html           # Category page — products, filters, sort, search
+├── product.html            # Product detail — image, sizes, add to bag, reviews
+├── deals.html              # Deal of the Day — countdown timer, discounted products
+├── wishlist.html           # Saved products
+├── checkout.html           # Checkout form — contact, shipping, payment
+├── order-confirmation.html # Order confirmed — receipt, order ID, delivery estimate
+├── all-categories.html     # Browse all 8 categories
+├── products.js             # Mock data layer — 65 products with full metadata
+├── header.js               # Shared logic — cart, auth, region, dark mode, footer
+├── styles.css              # Global styles — brand palette, dark mode, responsive
+└── README.md
+```
 
 ---
 
-## Ground Rules
+## Tech Stack
 
-- You are free to refactor, reorganise, rename, and restructure the codebase as you see fit.
-- You may introduce frameworks, libraries, or build tooling if it helps you deliver a better result.
-- Focus on clarity, maintainability, and correctness.
-- Document any important decisions so that another engineer can quickly understand your approach.
+| Layer | Technology |
+|---|---|
+| Frontend | Vanilla HTML, CSS, JavaScript (no framework) |
+| Data layer | `products.js` — structured JS array acting as mock backend |
+| Persistence | `localStorage` — cart, wishlist, user accounts, orders, reviews |
+| Fonts | Google Fonts — Great Vibes, Cormorant Garamond, Jost |
+| Images | ImgBB / Unsplash |
+| Deployment | Netlify |
 
-Have fun transforming this prototype into something truly robust and ready to ship.
+---
+
+## Mock Backend Approach
+
+Since the challenge specified no backend was included and encouraged adding one, the data layer is handled through a structured `products.js` file that acts as a mock API — all product retrieval, filtering, sorting, and category logic runs against this file. All state (cart, user session, wishlist, orders, reviews) is persisted in `localStorage`, making the experience fully functional without a server.
+
+This architecture means the store could be connected to a real REST API or database (e.g. Node/Express + MongoDB) by simply replacing the `products` array with `fetch()` calls — all the frontend logic is already structured to support that upgrade.
+
+---
+
+## Key Technical Decisions
+
+**Shared `header.js` component** — Rather than duplicating header, cart, auth, and footer HTML across every page, all shared logic is centralised in `header.js` and injected at runtime using `injectHeader()` and `injectFooter()`. This keeps all pages consistent and makes global changes (e.g. adding a new nav link) a single-file edit.
+
+**Scripts in `<head>` not `<body>`** — After debugging script loading order issues, all external scripts (`products.js`, `header.js`) are loaded in `<head>` so they are fully available when inline scripts run immediately on page load.
+
+**Category pages via URL params** — A single `category.html` file handles all 8 categories by reading `?cat=Electronics` from the URL. This avoids duplicating page code while giving each category its own shareable URL.
+
+**No framework chosen deliberately** — The challenge stated the original codebase was plain HTML/CSS/JS. Keeping the same stack respects the original foundation while demonstrating strong vanilla JS skills.
+
+---
+
+## How to Run Locally
+
+**Option 1 — Open directly**
+1. Clone or download the repository
+2. Open `index.html` in your browser
+
+**Option 2 — Live Server (recommended)**
+1. Open the folder in VS Code
+2. Install the **Live Server** extension by Ritwick Dey
+3. Right-click `index.html` → **Open with Live Server**
+4. Visit `http://127.0.0.1:5500`
+
+No build step, no dependencies, no install required.
+
+---
+
+## Setup Notes
+
+- All data is in `products.js` — edit product names, prices, images, or stock levels there
+- To add a promo banner image, open `index.html` and replace the `src` on the relevant `<img class="banner-bg">` tag
+- Promo code is `SILK-SYNTAX` — defined in `header.js` in the `applyPromo()` function
+- To change the region default, edit the `currentRegion` line in `header.js`
+- Dark mode preference is saved to `localStorage` key `fif_theme`
+
+---
+
+## Suggested Next Steps (Real Backend)
+
+To upgrade from mock to production:
+1. Replace `products.js` with a Node.js/Express API endpoint returning JSON
+2. Replace `localStorage` cart with server-side sessions or a database
+3. Add real payment processing via Stripe
+4. Add email confirmation via SendGrid or Resend
+5. Deploy API on Railway or Render alongside the Netlify frontend
+
+---
+## Author
+
+**Deekshita** — Built for the Fix-It Forward hackathon challenge
+Forked from [acmw-bpdc/Fix-it-Forward](https://github.com/acmw-bpdc/Fix-it-Forward)
+
+---
+
+*This is a demo store. No real payments are processed and no orders will ship.*
